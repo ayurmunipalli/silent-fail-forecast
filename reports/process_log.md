@@ -48,3 +48,9 @@ Numbered, timestamped line per action (plan.md §4/§5). Format:
 41 | 2026-07-16 07:21 IST | LEAD → R-AUDIT | Dispatched P4 pass (r-audit.md P4 protocol). | —
 42 | 2026-07-16 07:45 IST | R-AUDIT → LEAD | P4 SIGN-OFF (binding). No gating language (only disclaimers); credential value-scan definitive — neither key value anywhere in repo; exclusions logged not imputed; no raster on disk (genuine vector SVG); all headline counts reproduce exactly from parquets. | reports/agent_logs/r-audit.md
 43 | 2026-07-16 07:46 IST | LEAD | Committing P4 (plan.md §3 step 7; PROVENANCE same commit; explicit file list). | commit
+44 | 2026-07-16 07:52 IST | LEAD | P4 committed: f75fb13. All four probe stages signed off. Compiled phase0_memo.md from the four signed-off checkpoints only; thresholds quoted verbatim (§1, §3, Amendment 1, §4); verdict = pre-committed branch GO (PASS@14 channel a; channel b floor PASS); deviations/flags enumerated; no recommendation language. | phase0_memo.md
+45 | 2026-07-16 07:53 IST | LEAD → R-AUDIT | Dispatched memo audit pass (memo-vs-thresholds; final stage). | —
+46 | 2026-07-16 08:05 IST | R-AUDIT → LEAD | MEMO SIGN-OFF (binding). Six quoted threshold blocks verified verbatim programmatically; GO follows mechanically from signed-off cells; no recommendation language; commit table matches ledger+git; deviations list matches record. Phase-0 R-AUDIT chain closed: P1, P2, P3, P4, memo — all SIGN-OFF, no open defects. | reports/agent_logs/r-audit.md
+47 | 2026-07-16 08:06 IST | LEAD | Committing memo (plan.md §3 step 8). | commit
+48 | 2026-07-16 08:07 IST | LEAD | Memo committed: b4e9ee7. | commit b4e9ee7
+49 | 2026-07-16 08:07 IST | LEAD → AYUR | Verdict announced: GO (pre-committed branches: channel a PASS@14; channel b floor PASS). plan.md §3 step 9 complete. LEAD HALTED. Adjudication is Ayur's; nothing further in scope. | —

@@ -279,3 +279,52 @@ reconciled" — descriptive, no reconciliation claim, no causal language.
 **VERDICT: SIGN-OFF.** No gating language; Census key provably never printed; exclusions
 logged not imputed; no raster on disk; headline numbers reproduce exactly. This is the
 last probe stage; the memo pass follows.
+
+---
+
+### 2026-07-16 — MEMO audit (LEAD) — **SIGN-OFF (binding)** — final stage
+
+Memo protocol: thresholds quoted verbatim; verdict consistent with signed-off cells;
+no recommendation/adjudication language; cites only signed-off content; sign-off/commit
+table vs git + my records; deviations list vs the record.
+
+**Thresholds VERBATIM — PASS (character-level, programmatic).** All six quoted blocks
+are exact substrings of `phase0_probe.md` (whitespace-normalized for line wrapping):
+§1 GO ("at least channel (a) passes; spec drafting proceeds."); GO-DEGRADED fragment
+("(a) passes, (b) fails"); the full KILL-THRESHOLD block ("the gate evaluates at
+**W = 14**: … the duplicate channel fails at the gate."); Amendment-1 escalation
+("FAIL@14 ∧ PASS@30 → **HOLD**"; "FAIL@both → KILL. PASS@14 → GO on channel (a)."), with
+the elided parenthetical honestly marked "[...]"; §4 floor ("channel (b) is usable …
+iff ≥ **30** … cohort-seasons combined."). No restatement or adjustment.
+
+**Verdict consistency — PASS.** GO follows mechanically from the signed-off cells:
+channel (a) PASS@14 (median 4 ≥ 2, n=76,217) AND channel (b) PASS (377 ≥ 30) → GO
+(not GO-DEGRADED, which needs (b) to fail; not HOLD/KILL, ruled out by PASS@14). All
+cited cells (gate 4/6/76,217; lag 9/19/26; 377 with 223/244 robustness; P4 148/146,
+106,231/106,232, 63.2%, medians 3/8, income $85,263/$79,943) match the signed-off P2/
+P3/P4 checkpoints exactly. Nothing newly computed; no unsigned source.
+
+**No recommendation/adjudication language — PASS.** The memo states the branch and
+repeatedly reserves adjudication to Ayur (header lines 7–8; closing 105–108: "recommends
+nothing beyond stating the pre-committed branch that fired … its adjudication (including
+whether spec drafting proceeds) is Ayur's alone"). "spec drafting proceeds" appears only
+inside the verbatim §1 quote, not as the memo's own recommendation. Stating GO is the
+memo's required deliverable (probe §7 #5); the GO branch is mechanical (no adjudication
+needed to select it), and final adjudication is explicitly Ayur's. Conforms.
+
+**Sign-off / commit table — PASS.** db4e24d (P1) / ce97efe (P2) / eb48b48 (P3) /
+f75fb13 (P4) all match the git log and my ledger; per-stage result descriptions
+(SIGN-OFF, blind max-abs-diff 0 for P2, etc.) accurate. Bootstrap folded into the P1 row
+is correct — my single P1 sign-off covered the recomputed bootstrap sha256s + the pull.
+
+**Deviations list — PASS, matches the record.** Items 1–4 (Amendment 3; heat-season
+scoping non-blocking flag with median 4↔3; h4mf-f24e conformant-with-disclosure; class
+B+C superset) are exactly my logged flags/rulings. Item 5 (blank signature block vs
+APPROVED header) is my READY flag AND its clause "Ayur has stated he will initial it" is
+backed by the record — process_log entry 25 (AYUR → LEAD, 2026-07-16 04:05): "Ayur to
+initial signature block." No unbacked attribution.
+
+**VERDICT: SIGN-OFF.** Thresholds verbatim; GO consistent with the signed-off cells and
+mechanically derived; no recommendation/adjudication overreach; table matches git + my
+records; deviations match the record. The memo is clear to commit; adjudication is
+Ayur's alone. This closes the phase-0 R-AUDIT chain (P1, P2, P3, P4, memo — all SIGN-OFF).
