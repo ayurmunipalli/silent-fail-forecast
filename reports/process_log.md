@@ -54,3 +54,5 @@ Numbered, timestamped line per action (plan.md §4/§5). Format:
 47 | 2026-07-16 08:06 IST | LEAD | Committing memo (plan.md §3 step 8). | commit
 48 | 2026-07-16 08:07 IST | LEAD | Memo committed: b4e9ee7. | commit b4e9ee7
 49 | 2026-07-16 08:07 IST | LEAD → AYUR | Verdict announced: GO (pre-committed branches: channel a PASS@14; channel b floor PASS). plan.md §3 step 9 complete. LEAD HALTED. Adjudication is Ayur's; nothing further in scope. | —
+50 | 2026-07-16 08:20 IST | AYUR → LEAD | ADJUDICATION: GO, ratified. Deviations reviewed and accepted as disclosed; probe-doc signature block initialed by Ayur. PHASE-0 CLOSED. No further work authorized until model_spec.md exists (drafted outside this session, approved and frozen by Ayur); G0 semantics then take over. Teammates ordered stood down. | —
+51 | 2026-07-16 08:21 IST | LEAD → ALL | Stand-down issued to R-AUDIT, A-PULL, A-GATE, A-AUX. Ledger closed at this entry. | —
