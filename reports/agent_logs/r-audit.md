@@ -53,3 +53,62 @@ _(binding SIGN-OFF / REJECT entries land here, one per stage, in the order the L
 requests. None yet — spawned idle.)_
 
 - 2026-07-16 — Initialized. READY, idle. Awaiting first audit dispatch from LEAD.
+
+---
+
+### 2026-07-16 — P1 audit (A-PULL) — **SIGN-OFF (binding)**
+
+Amendment 3 read in full before auditing (archive union restoring 2019-06-01 floor;
+P2 window-coverage eligibility codified — the latter is a P2 concern, not a P1
+deliverable). Full r-audit.md P1 protocol applied + LEAD's three ruled additions.
+All checks re-derived independently in my own code (`scratchpad/audit_p1.py`), read
+directly from the parquets — not from A-PULL's stats.
+
+**Dataset IDs — live re-verification (Rule 5), 2026-07-16, api/views/*.json:**
+| ID | Live name (matches PROVENANCE) |
+|---|---|
+| `erm2-nwe9` | "311 Service Requests from 2020 to Present" ✓ (re-scope confirmed — the cause Amendment 3 resolves) |
+| `76ig-c548` | "311 Service Requests from 2010 to 2019" ✓ |
+| `wvxf-dwi5` | "Housing Maintenance Code Violations" ✓ |
+| `64uk-42ks` | "Primary Land Use Tax Lot Output (PLUTO)" ✓ |
+
+**Imports sha256 (recomputed vs PROVENANCE, all 3 exact match):** primary_lgbm.txt,
+building_season_labels.parquet, test_predictions.parquet — all identical; sizes match.
+
+**Row counts vs PROVENANCE (all exact):** current 1,645,614; archive 93,022;
+violations 128,121 (C=128,120, B=1; whitelist text matches all 128,121 rows);
+PLUTO 858,602 (bbl unique, 0 dupes — clean join key).
+
+**Addition 1 — union dedupe arithmetic (from parquets):** 93,022 + 1,645,614 =
+1,738,636; unique_key overlap archive∩current = **0**; dedupes removed = **0** (as
+reported); deliverable = 1,738,636 − 7,123 null-bbl = **1,731,513**; actual
+deliverable parquet = **1,731,513**, residual null-bbl in deliverable = 0. Exact.
+
+**Addition 2 — restored floor:** union min created_date = 2019-06-01 00:17:18,
+0 rows before the floor; monthly counts populated every month 2019-06 → 2020-03
+(2019-06=3,098 … 2019-11=36,687 … 2020-01=25,711) — **no 2019 hole**.
+
+**Addition 3 — seam continuity 2019-12-31→2020-01-01:** source×side crosstab shows
+archive supplies ALL 93,022 pre-2020 rows and current ALL 1,645,614 from-2020 rows,
+zero cross-source bleed (consistent with dedupe=0). Weekly counts span the seam
+continuously (…2019-12-23/29=3,979 [Christmas dip], 2019-12-30/01-05=4,656,
+2020-01-06/12=5,255…) — no coverage gap, no pileup, no duplication beyond the
+logged dedupe of 0. Material-departure check (Ayur's standing instruction): none.
+
+**Null-bbl accounting:** 7,123 / 1,738,636 = 0.4097% (~0.4% expected) ✓.
+**Storage:** data/raw = 79.17 MB ≪ 2 GB (Rule 6) ✓. Rasters: none ✓.
+
+**Class B/C superset:** whitelist verbatim is class IN ('B','C'); §3 gates class-C.
+A-PULL pulled the B/C superset (1 class-B row) with `class` column retained for
+A-GATE to apply the §3 restriction explicitly. Conformant for P1 (LEAD noted Ayur
+accepted). **Carry-forward for P2 audit:** confirm A-GATE actually restricts to
+class C before gating.
+
+**Cosmetic (not a defect):** `c311_heat_complaints_full.parquet` holds only the
+erm2-nwe9 current pull despite the "_full" suffix; the union is computed in-memory
+and the deliverable is `c311_heat_complaints.parquet`. Clearly documented in
+PROVENANCE and code; deliverable is correct.
+
+**VERDICT: SIGN-OFF.** No defects. Every reported figure reconciles exactly with
+independent re-derivation; all four IDs verified live; imports intact; floor
+restored; seam clean; storage within budget.

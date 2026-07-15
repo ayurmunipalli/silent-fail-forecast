@@ -193,4 +193,22 @@ behavioral rules remain in `CLAUDE.md`. The scientific content of this document 
 probes P1–P4, all thresholds, the W=14/HOLD gate (Amendment 1), verdict semantics —
 is UNCHANGED. Ayur's adjudication of the verdict remains non-delegatable.
 
+### Amendment 3 — 2026-07-16 — 311 archive union restoring the 2019-06-01 floor; P2 window-coverage eligibility
+**Author of record: Ayur Munipalli** (Rule 9 ruling delivered in session, 2026-07-16, resolving the P1 coverage stop: NYC re-scoped `erm2-nwe9` to created_date ≥ 2020-01-01, so the §2 floor of 2019-06-01 returns zero 2019 rows).
+
+1. **Archive union (authorized).** The P1 311 pull is the union of archive dataset
+   `76ig-c548` ("311 Service Requests from 2010 to 2019") with `erm2-nwe9`, restoring
+   the original §2 floor `created_date >= 2019-06-01`. Same whitelist verbatim, same
+   six §2 columns. The union is deduplicated on `unique_key`, with the dedupe count
+   logged. Both dataset IDs and their live-verification dates are recorded in
+   PROVENANCE.md.
+2. **Window-coverage eligibility for P2 (codified).** Only violations whose full
+   W-window (evaluated at the wider W = 30) lies entirely within 311 data coverage
+   enter the P2 distributions and the gate. Violations excluded on coverage grounds
+   are counted and reported, never silently dropped. Seasons outside the probe doc's
+   2019-20 … 2025-26 list remain out of P2, as already written.
+
+The kill-gate thresholds, the W=14 gate window, the HOLD branch (Amendment 1), and all
+verdict semantics are UNCHANGED by this amendment.
+
 APPROVED: ____________  DATE: ____________

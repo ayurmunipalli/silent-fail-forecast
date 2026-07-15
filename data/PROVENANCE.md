@@ -26,3 +26,98 @@ originals byte-for-byte.
 **Anomalies:** none.
 
 **Storage note:** imports/ total ≈ 33.2 MB — negligible against the 2 GB tabular budget (Rule 6).
+
+---
+
+## 2026-07-16 — P1: complaint-granularity pull (A-PULL)
+
+**Dataset IDs verified live 2026-07-16** against data.cityofnewyork.us metadata API (Rule 5):
+
+| ID | Live name | Role |
+|---|---|---|
+| `erm2-nwe9` | 311 Service Requests from 2020 to Present | per-complaint rows (probe doc §2) |
+| `wvxf-dwi5` | Housing Maintenance Code Violations | fresh violations pull, frozen whitelist |
+| `64uk-42ks` | Primary Land Use Tax Lot Output (PLUTO) | bbl + unitstotal |
+
+**Script:** `src/p1_pull.py` — server-side filtered, paged ($order=:id, 50k pages),
+parquet-cached, idempotent (rerun confirmed cache-hit), storage-guarded, seed 42
+(no sampling occurs in P1). Token from `.env` via python-dotenv, never printed.
+
+**Pulls (all counts match independent server-side `count(*)` queries exactly):**
+
+1. `data/raw/c311_heat_complaints_full.parquet` — 1,645,614 rows.
+   Select: `unique_key, created_date, closed_date, bbl, complaint_type, status`.
+   Where (verbatim §2): `complaint_type in ('HEAT/HOT WATER','Heat/Hot Water') and
+   created_date >= '2019-06-01'`. No bbl filter at pull.
+   **Null-bbl accounting (§2):** 6,762 rows (0.411%) null/empty bbl — matches the
+   expected ~0.4%. Excluded to produce the deliverable
+   `data/raw/c311_heat_complaints.parquet` (1,638,852 rows); full pull retained.
+   Date range present: 2020-01-01 00:04:45 … 2026-07-13 23:43:26.
+
+2. `data/raw/hpd_violations_heat.parquet` — 128,121 rows.
+   Select: `violationid, bbl, class, novdescription, inspectiondate, novissueddate,
+   approveddate, currentstatus`.
+   Where: frozen whitelist VERBATIM from winter-fail-forecast `src/s1_data_pull.py`
+   (`(upper(novdescription) like '%ADEQUATE SUPPLY OF HEAT%' or upper(novdescription)
+   like '%PROVIDE HOT WATER AT%') and class in ('B','C')`) + `inspectiondate >=
+   '2019-06-01'` (matches the 311 floor; P2's window looks backward from
+   inspectiondate, so earlier violations cannot associate to any in-scope complaint).
+   Class split: C = 128,120, B = 1. **Flag (not resolved here):** probe doc §3 gates
+   on class-C rows; verbatim whitelist is class IN ('B','C'). B/C superset pulled
+   with `class` column retained so P2 applies the §3 class-C restriction explicitly.
+   Null-bbl: 185 rows (0.144%) — retained in raw, accounting logged.
+   Inspection dates: 2019-06-01 … 2026-07-14.
+
+3. `data/raw/pluto_units.parquet` — 858,602 rows. Select: `bbl, unitstotal`.
+   No filter (full lot universe). Null unitstotal: 429 rows (0.05%).
+
+**Storage:** data/raw total 78.1 MB (Rule 6 budget: 2 GB — fine).
+
+**ANOMALY (resolved by Amendment 3) — 311 coverage gap vs probe doc §2:**
+NYC OpenData re-scoped `erm2-nwe9` to records from **2020-01-01** (dataset renamed
+"…from 2020 to Present"). The probe's verbatim floor `created_date >= '2019-06-01'`
+therefore returns **zero** rows for 2019-06-01..2019-12-31; season 2019-20 is
+truncated at Jan 2020 (its Oct–Dec 2019 portion missing), beyond the truncation §3
+anticipated. The 2019 tail exists in archive dataset `76ig-c548` ("311 Service
+Requests from 2010 to 2019", verified live 2026-07-16): 93,022 whitelisted rows for
+2019-06-01+, same six columns confirmed by sample query. Rule 9 stop escalated by
+LEAD; Ayur ruled → **phase0_probe.md Amendment 3** authorizes the archive union
+(see next entry). Note: the old repo's cached `dot311_heat.parquet` (pulled
+2026-07-14) has the identical truncation (min created_date 2020-01-01, 0 rows
+before), and the probe doc's ~1.65M row estimate matches the 2020+ volume exactly —
+the split predates this project.
+
+---
+
+## 2026-07-16 — P1 (continued): 311 archive union per Amendment 3 (A-PULL)
+
+**Authorization:** phase0_probe.md Amendment 3 (APPROVED 2026-07-16, Ayur) — union
+`76ig-c548` with `erm2-nwe9`, restoring the §2 floor `created_date >= '2019-06-01'`,
+dedupe on `unique_key` with count logged.
+
+**Dataset ID verified live 2026-07-16** (Rule 5): `76ig-c548` — "311 Service
+Requests from 2010 to 2019".
+
+**Archive pull:** `data/raw/c311_heat_complaints_archive_2019.parquet` — 93,022 rows.
+Same select (six §2 columns) and same verbatim whitelist/floor as the erm2-nwe9
+pull; archive coverage ends 2019-12-31. Matches the pre-pull server-side count
+exactly.
+
+**Union arithmetic (Amendment 3):** archive 93,022 + current 1,645,614 = 1,738,636;
+duplicates on `unique_key`: **0** removed; union = **1,738,636 rows**, spanning
+2019-06-01 00:17:18 … 2026-07-13 23:43:26 (floor restored).
+
+**Null-bbl accounting (updated for the union, §2):** 7,123 of 1,738,636 rows
+(0.410%) null/empty bbl — excluded with the exclusion logged. Deliverable
+`data/raw/c311_heat_complaints.parquet` REGENERATED from the union:
+**1,731,513 rows** (= 1,738,636 − 7,123). Deliverable is rebuilt deterministically
+from the two cached raw pulls on every run (idempotent; rerun confirmed).
+
+**Seam continuity (2019-12-31 → 2020-01-01 boundary; reported, not smoothed):**
+daily union counts 2019-12-25..2020-01-07 = 664, 678, 457, 437, 515, 850, 608 |
+692, 673, 533, 554, 746, 804, 831. No gap and no pileup at the seam; variation is
+within the holiday-week range on both sides.
+
+**Storage:** data/raw total 79.2 MB (Rule 6 fine). Stats: `data/p1_stats.json`.
+
+**Anomalies:** none beyond the re-scope already recorded above.
