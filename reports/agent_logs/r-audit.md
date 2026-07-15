@@ -112,3 +112,66 @@ PROVENANCE and code; deliverable is correct.
 **VERDICT: SIGN-OFF.** No defects. Every reported figure reconciles exactly with
 independent re-derivation; all four IDs verified live; imports intact; floor
 restored; seam clean; storage within budget.
+
+---
+
+### 2026-07-16 — P2 audit (A-GATE) — **SIGN-OFF (binding)** — BLIND protocol
+
+Strict blind order followed. **Step 1** (independent re-derivation from ONLY the P1
+parquets + probe §3/Amdt 1/Amdt 3, my own code `scratchpad/audit_p2.py`, BEFORE
+reading any A-GATE output). **Step 2** read A-GATE's checkpoint, `p2_gate.py`,
+`p2_stats.json`, `a-gate.md` and compared. **Step 3** verified branch mechanics.
+
+**Step-1 blind cells (my first pass):** W=14 ≥10u median **3**, W=30 median **4**,
+n=84,173 → PASS@14 → GO.
+**A-GATE cells:** W=14 ≥10u median **4**, W=30 median **6**, n=76,217 → PASS@14 → GO.
+
+**Fork identified & resolved.** The magnitude gap traced to two A-GATE decisions my
+first blind pass had not applied — both stated in A-GATE's docstring + checkpoint:
+1. **Off-season (Jun–Sep) exclusion (dominant driver).** A-GATE restricts P2 to the
+   seven listed heat seasons (Oct–May, start-year label), using `season_of` ported
+   in-semantics from the frozen winter-fail-forecast label spine; Jun–Sep = no
+   season → excluded (13,253). Grounded in §3 ("stratified by season 2019-20 …
+   2025-26") + Amendment 3 item 2 ("seasons outside the list remain out of P2").
+2. **Literal `bbl=0` exclusion** (12 violations / 331 complaints) — negligible for
+   the gate (zero-bbl violations never match PLUTO, so never enter the ≥10-unit cell).
+
+**Reproduction under A-GATE's STATED method (`scratchpad/audit_p2b.py`): MAX ABS
+DIFF = 0 on every cell** — waterfall 128,121→114,344 (−C1 −dup0 −bbl197 −covL303/R23
+−off13,253); unit join 114,151 (99.83%); gate n(≥10u)=76,217; median W14=4, W30=6;
+unit-class medians 2/2/3/5 (W14) & 2/3/5/8 (W30); pairs W30=1,142,293; lag pooled
+9/19/26; zero-complaint 4.94/3.56. A-GATE's code faithfully executes its stated method.
+
+**Join-mechanics audit (all clean):**
+- *Window inclusivity:* [inspd−W, inspd] inclusive both ends on calendar dates via
+  searchsorted left/right — replicated exactly. Same-day complaints counted; disclosed.
+- *Timezone/date truncation:* both sides truncated to naive-local calendar date;
+  inspectiondate midnight-stamped (lossless); created_date time-of-day dropped
+  (widens upper bound in the inclusive direction) — documented choice.
+- *Duplicate violation rows:* 0 exact-dup violationid; multiple violations per
+  (bbl,day) retained per §3 (unit = violation row) — verified.
+- *bbl dtype/leading zeros:* numeric→int64 (BBL ≤ ~5.1e9, exact in float64; no
+  leading-zero loss — borough digit 1–5); decimal-suffixed PLUTO parsed; zero-bbl
+  excluded and counted — join reproduces.
+- *Unit-join coverage/unmatched:* 99.83% matched; 193 unmatched excluded from
+  gate/strata, retained in season margins; PLUTO conflicting-units excluded (0),
+  never defaulted — verified.
+
+**Class-C carry-forward (from my P1 audit): RESOLVED.** A-GATE removed exactly the
+1 non-C row (128,121→128,120) as the first waterfall filter, explicitly. Confirmed.
+
+**Branch mechanics (step 3):** gate14 = 4 ≥ 2 → **PASS@14 → GO on channel (a)**
+follows mechanically under Amendment 1. A-GATE states the branch, does not adjudicate.
+
+**FLAG for LEAD/Ayur (transparency, does NOT block sign-off — I do not adjudicate):**
+the heat-season scoping is a documented interpretation that changes the reported cell
+MAGNITUDE (median 4 heat-season-only vs 3 all-months) but NOT the gate OUTCOME. The
+W=14 ≥10-unit median is ≥ 2 under every interpretation I tried (heat-season-only=4,
+all-months date-level=3, all-months timestamp-level=3) → **the PASS@14 → GO verdict is
+robust to the season-definition fork.** A-GATE's choice is well-grounded in §3 +
+Amendment 3 and transparently documented; surfaced for Ayur's awareness, not as a defect.
+
+**VERDICT: SIGN-OFF.** Gate cell and full waterfall reproduce with max abs diff 0
+under A-GATE's stated, documented, doc-consistent method; branch follows mechanically;
+join mechanics clean; class-C restriction applied; outcome robust to the one
+interpretation fork, which I have flagged for Ayur.
