@@ -229,3 +229,53 @@ reported, not hidden behind the 100% dataset coverage. Ruled conformant.
 **VERDICT: SIGN-OFF.** 377 and the full waterfall reproduce exactly; floor PASS is
 mechanical and robust; HPD verification logged; version-choice logic sound; the one
 deviation (h4mf-f24e authority) ruled conformant-with-disclosure.
+
+---
+
+### 2026-07-16 — P4 audit (A-AUX) — **SIGN-OFF (binding)**
+
+P4 protocol: (1) no gating language; (2) Census key never printed anywhere;
+(3) exclusions logged not imputed. Plus raster check and a no-fabrication
+reproduction (`scratchpad/audit_p4.py`). P4 gates nothing (§5 descriptive).
+
+**(1) No gating language — PASS.** The only `verdict`/`gate` tokens in the checkpoint
+are the two disclaimers ("Descriptive only — this probe gates nothing; no verdict
+appears here"). Grep for GO/GO-DEGRADED/KILL/HOLD/PASS/FAIL/DEGRADE/threshold/kill-gate
+applied as a decision → none. §5's question is answered explicitly "as DESCRIPTION,"
+with "No conclusion about extrapolation feasibility is drawn here — that belongs to the
+spec phase." Conforms.
+
+**(2) Census key never printed — PASS (definitive).** Code review: key read from `.env`
+via dotenv, used only inside ACS URL params passed to `_get` (which never prints); no
+print/log statement emits it; credential-failure message names the variable, not the
+value. Value-scan (sandbox disabled so dotenv could load the real 40-char key + 25-char
+Socrata token): NEITHER value appears anywhere in the repo (excl .env/.venv/.git) —
+checked checkpoint, code, stats, SVG, all agent logs, process_log, PROVENANCE, and every
+data/ file including the ACS parquet cache. Literal `key=` absent from every artifact.
+No leak.
+
+**(3) Exclusions logged not imputed — PASS.** Income Census sentinel −666666666 → NaN
+(not imputed); zero-household tracts → LEP undefined → excluded; buildings without
+geo/income/LEP → labeled "(uncovered)" and COUNTED (excl_no_pluto_geo 1,209 /
+excl_no_cd_income 0 / excl_no_lep 14); unit-join unmatched → "unmatched" label, counted
+(1,043); conflicting-unitstotal bbls excluded + counted (0). Terciles computed only over
+covered rows; uncovered rows get a label, never a fabricated tercile. The only `fillna(0)`
+is the definitional zero-complaint count (a bbl absent from 311 truly has 0), not
+imputation. No covariate value is invented.
+
+**Raster check (Rule 6) — PASS.** No raster files anywhere under outputs/ or data/
+(png/jpg/tif/gif/bmp/webp). Figure is a genuine vector SVG (`file` confirms;
+936×288pt), with ZERO embedded raster (no data:image / <image> / base64). Nothing
+raster touches disk.
+
+**No-fabrication reproduction (Rule 1) — EXACT:** universe 181,863; zero 114,890
+(63.2%); positive 66,973; 311-bbls-outside-spine 26,921; conflicting-units 0;
+units-unmatched 1,043; no-PLUTO-geo 1,209 — all reproduce from the parquets. Overlap
+stats internally consistent (cells_both 146 + zero_only 1 + pos_only 1 = 148 = occupied;
+zero 106,231/106,232 → the 1 zero-only building; pos 65,508/65,513 → 5 in the pos-only
+cell). The 63.2%-this-window vs WFF ~70%-own-window comparison is framed "reported, not
+reconciled" — descriptive, no reconciliation claim, no causal language.
+
+**VERDICT: SIGN-OFF.** No gating language; Census key provably never printed; exclusions
+logged not imputed; no raster on disk; headline numbers reproduce exactly. This is the
+last probe stage; the memo pass follows.

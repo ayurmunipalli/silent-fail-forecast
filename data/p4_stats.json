@@ -1,0 +1,117 @@
+{
+  "universe_buildings": 181863,
+  "c311_coverage": [
+    "2019-06-01",
+    "2026-07-13"
+  ],
+  "zero_buildings": 114890,
+  "positive_buildings": 66973,
+  "zero_share_pct": 63.2,
+  "c311_bbls_outside_spine": 26921,
+  "pluto_bbl_conflicting_units_excluded": 0,
+  "units_unmatched": 1043,
+  "borough_unmapped": 0,
+  "acs_tracts": 2327,
+  "acs_tracts_income_nonnull": 2199,
+  "acs_tracts_lep_defined": 2231,
+  "n_cds_with_income": 61,
+  "excl_no_pluto_geo": 1209,
+  "excl_no_cd_income": 0,
+  "excl_no_lep": 14,
+  "income_tercile_bands": {
+    "T1_low": [
+      30226.0,
+      72928.0
+    ],
+    "T2_mid": [
+      72928.0,
+      93510.0
+    ],
+    "T3_high": [
+      93510.0,
+      205640.0
+    ]
+  },
+  "lep_tercile_bands": {
+    "T1_low": [
+      0.0,
+      0.0548
+    ],
+    "T2_mid": [
+      0.0548,
+      0.1687
+    ],
+    "T3_high": [
+      0.1687,
+      0.8098
+    ]
+  },
+  "dist_unit_class": {
+    "zero": {
+      "2-5": 79926,
+      "6-19": 21065,
+      "<2": 7562,
+      "20-49": 3357,
+      "50+": 1976,
+      "unmatched": 1004
+    },
+    "positive": {
+      "2-5": 22057,
+      "6-19": 21214,
+      "20-49": 12500,
+      "50+": 9802,
+      "<2": 1361,
+      "unmatched": 39
+    }
+  },
+  "units_median": {
+    "zero": 3.0,
+    "positive": 8.0
+  },
+  "units_p25_p75": {
+    "zero": [
+      3.0,
+      5.0
+    ],
+    "positive": [
+      3.0,
+      27.0
+    ]
+  },
+  "lep_median": {
+    "zero": 0.1005,
+    "positive": 0.1051
+  },
+  "cd_medinc_median": {
+    "zero": 85263.0,
+    "positive": 79943.0
+  },
+  "complete_covariate_buildings": 171745,
+  "complete_zero": 106232,
+  "complete_positive": 65513,
+  "n_cells_occupied": 148,
+  "overlap": {
+    "zero_in_cells_with_ge1_pos_n": 106231,
+    "pos_in_cells_with_ge1_zero_n": 65508,
+    "zero_in_cells_with_ge1_pos_pct": 100.0,
+    "zero_in_cells_with_ge10_pos_pct": 99.9,
+    "pos_in_cells_with_ge1_zero_pct": 100.0,
+    "pos_in_cells_with_ge10_zero_pct": 99.3,
+    "cells_zero_only": 1,
+    "cells_pos_only": 1,
+    "cells_both": 146
+  },
+  "zero_only_cells_buildings": 1,
+  "zero_only_cells_top": [
+    {
+      "cell": "20-49|SI|T3_high|T3_high",
+      "n_zero": 1
+    }
+  ],
+  "zero_share_by_unit_class_pct": {
+    "2-5": 78.4,
+    "6-19": 49.8,
+    "20-49": 21.2,
+    "50+": 16.8
+  }
+}

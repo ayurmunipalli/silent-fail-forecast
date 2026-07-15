@@ -84,3 +84,61 @@ screen the count is an upper bound on complaint-independent events.
 
 **Not done (out of current dispatch):** P4 — awaiting LEAD dispatch after the
 R-AUDIT P3 pass. No commits, no spawns, no messages to other workers.
+
+---
+
+## 2026-07-16 — Task 2: P4 (zero-mass descriptives)
+
+**Dispatched by:** LEAD after P3 sign-off (commit eb48b48; plan.md §3 step 7).
+
+### What I did (in order)
+
+1. Read probe doc §5 + my definition's P4 paragraph; read WFF
+   `src/s3d_income_equity.py` (READ-ONLY — repo untouched) to port the
+   CD-income machinery and Census plumbing.
+2. **Verified prerequisites:** ACS 2024 acs5 endpoint live (Rule 5) with all
+   seven P4 variables; keyless requests rejected with an HTML "Missing Key"
+   page (Census requires a key for all queries — matches WFF's 2026-05-12
+   note). `CENSUS_API_KEY` present in `.env` (boolean check only, value never
+   printed). NOTE: the sandbox denies `.env` reads, so a sandboxed check
+   falsely reports the key missing — verified unsandboxed; recorded as a
+   harness mechanic, not a Rule 9 credential failure.
+3. **Pulls** (`src/p4_zeromass.py`, idempotent, seed 42, storage-guarded):
+   `pluto_geo.parquet` (bbl, cd, bct2020; 858,602 rows) and
+   `acs_tract_2024.parquet` (2,327 tracts; B19013 income, B11001 households,
+   C16002 LEP; sentinels → null, logged).
+4. **Analysis:** universe = 181,863 distinct spine bbls (frozen R4 import);
+   zero mass = 0 whitelisted 311 complaints over 2019-06-01…2026-07-13 →
+   114,890 (63.2%; WFF's ~70% was its own window — reported, not reconciled).
+   Covariates: unitstotal (P1 cache, P2 hygiene), borough (bbl digit), CD
+   income tercile (s3d method verbatim in semantics), tract LEP share
+   (C16002 limited-English-speaking-household share, definition documented).
+   Support-overlap described over unit-class × borough × income-tercile ×
+   LEP-tercile cells. Figure = SVG (vector; no raster on disk).
+5. Wrote `outputs/checkpoints/phase0_p4_zeromass.md`, `data/p4_stats.json`,
+   `outputs/figures/phase0_p4_zeromass.svg`; appended PROVENANCE P4 section.
+   Reran twice — byte-identical stats. No commits.
+
+### Results (description, not conclusion — P4 gates nothing)
+
+| Quantity | Value |
+|---|---|
+| Universe / zero mass | 181,863 / 114,890 (63.2%) |
+| Occupied covariate cells shared by both masses | 146/148 |
+| Zero-mass buildings in cells with ≥1 positive | 106,231/106,232 (100.0%; ≥10: 99.9%) |
+| Positive-mass buildings in cells with ≥1 zero | 65,508/65,513 (100.0%; ≥10: 99.3%) |
+| Median unitstotal zero vs positive | 3 vs 8 |
+| Zero-311 share by unit class | 2–5: 78.4% → 50+: 16.8% |
+| Median CD income zero vs positive | $85,263 vs $79,943 |
+| Median tract LEP share zero vs positive | 0.101 vs 0.105 |
+
+### Exclusions (logged, never imputed)
+
+Spine bbls without PLUTO geo 1,209; undefined tract LEP 14; unit-join
+unmatched 1,043; conflicting-units bbls 0; ACS income-null tracts 128 of
+2,327; zero-household (LEP-undefined) tracts 96.
+
+### Anomalies
+
+None beyond recorded harness mechanics (sandbox `.env` read-deny; api.census.gov
+and pip requiring unsandboxed runs). No Rule 9 conditions. Storage 96.2 MB.

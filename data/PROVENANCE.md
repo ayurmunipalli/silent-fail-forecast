@@ -176,3 +176,52 @@ UA-gating. All benign, none met Rule 9.
 
 **Storage:** data/raw = 90.7 MB total after P3 pulls (Rule 6 fine).
 Stats: `data/p3_stats.json`.
+
+---
+
+## 2026-07-16 — P4: zero-mass descriptives (A-AUX)
+
+**Sources verified live 2026-07-16 (Rule 5):**
+
+| Source | Role |
+|---|---|
+| `64uk-42ks` (PLUTO) | supplementary P4 pull `pluto_geo.parquet`: bbl, cd, bct2020 — 858,602 rows |
+| `api.census.gov/data/2024/acs/acs5` | ACS 2020-2024 5-year, tract level, NYC's 5 counties (state 36: 005/047/061/081/085) — verified live with key (HTTP 200, all 7 variables resolve); keyless probe returns HTML "Missing Key" (Census requires a key for ALL queries, consistent with WFF PROVENANCE note of 2026-05-12) |
+
+**Credential:** `CENSUS_API_KEY` from `.env` via python-dotenv, NEVER printed
+(Rule 2). Note: the sandbox denies reads of `.env`, so a sandboxed presence
+check falsely reports the key absent; verified present via unsandboxed
+boolean-only check (harness mechanic, recorded, not a Rule 9 condition).
+
+**Pulls (script `src/p4_zeromass.py` — paged, parquet-cached, idempotent (rerun
+confirmed, identical stats), storage-guarded, seed 42):**
+
+1. `data/raw/pluto_geo.parquet` — 858,602 rows (bbl, cd, bct2020).
+2. `data/raw/acs_tract_2024.parquet` — 2,327 tracts; ACS vars B19013_001E,
+   B11001_001E, C16002_{001,004,007,010,013}E. Income non-null 2,199 (94.5%;
+   sentinel -666666666 → null, logged); LEP share defined 2,231 (zero-household
+   tracts undefined, logged).
+
+**Key decisions:** universe = 181,863 distinct bbls of the frozen R4 label spine
+(read-only import); zero mass = 0 whitelisted 311 heat/hot-water complaints in
+the P1 deliverable (2019-06-01…2026-07-13) → 114,890 (63.2%; WFF's "~70%"
+reference was measured on its own window — reported, not reconciled). CD-income
+machinery ported from WFF `src/s3d_income_equity.py` (read-only; household-
+weighted tract-median mean, dominant-lot tract→CD crosswalk, building-level
+rank-qcut terciles). Tract LEP share = limited-English-speaking households /
+households (ACS C16002, definition fixed and documented). Figure written as SVG
+(vector — no raster on disk, Rule 6). Descriptive only; the checkpoint contains
+no gating language.
+
+**Exclusions (logged, never imputed):** spine bbls without PLUTO geo 1,209;
+without defined LEP 14; unit-join unmatched 1,043; conflicting-units bbls 0.
+
+**Headline descriptives:** support-overlap cells (unit-class × borough ×
+income-tercile × LEP-tercile, 171,745 complete-covariate buildings): 146/148
+occupied cells contain both masses; 106,231/106,232 zero-mass and 65,508/65,513
+positive-mass buildings sit in shared cells. Composition differs: median units
+3 vs 8; zero-share by unit class 78.4% (2–5) → 16.8% (50+); median CD income
+$85,263 vs $79,943; median tract LEP 0.101 vs 0.105.
+
+**Anomalies:** none beyond the recorded harness mechanics. **Storage:** data/raw
+= 96.2 MB (Rule 6 fine). Stats: `data/p4_stats.json`.
