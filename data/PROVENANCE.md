@@ -121,3 +121,58 @@ within the holiday-week range on both sides.
 **Storage:** data/raw total 79.2 MB (Rule 6 fine). Stats: `data/p1_stats.json`.
 
 **Anomalies:** none beyond the re-scope already recorded above.
+
+---
+
+## 2026-07-16 — P3: HSP cohorts + proactive-detectability heuristic (A-AUX)
+
+**Dataset IDs verified live 2026-07-16** against data.cityofnewyork.us (Rule 5):
+
+| ID | Live name | Role / outcome |
+|---|---|---|
+| `h4mf-f24e` | Buildings Selected for the Heat Sensor Program (HSP) | official HPD cohort list (provenance "official", rows updated 2026-03-01) — pulled |
+| `64uk-42ks` | PLUTO | supplementary P3 pull: bbl,address,borough (§4 address→BBL resolution; P1 cache lacks address) — pulled |
+| `uwyv-629c` | (legacy HPD Complaints) | login-walled — retired from public API; NOT usable |
+| `a2nx-4u46` | (legacy HPD Complaint Problems) | login-walled — retired from public API; NOT usable |
+| `ygpa-z7cr` | Housing Maintenance Code Complaints and Problems | LIVE (updated 2026-07-15) but EXCLUDED from phase-0 by probe doc Amendment 1 item 2 — NOT pulled |
+
+**HPD-complaints verification consequence (§4 P3.2, logged BEFORE choosing the
+heuristic version):** no HPD complaints dataset is usable in phase-0 → the
+311-ONLY version of the proactive-detectability heuristic runs, labeled as such.
+
+**Cohort-list PDFs (§4-named source) — all four fetched programmatically 2026-07-16**
+from `https://www.nyc.gov/assets/hpd/downloads/pdfs/services/heat-sensor-program-building-list-{2020,2022,2024,2025}.pdf`
+(nyc.gov 403s non-browser user agents; browser UA used), cached in `data/raw/hsp/`
+(84,396 / 108,090 / 62,297 / 61,769 bytes), 50 rows parsed per cohort, zero
+meaningful parse residue. **No manual_downloads.md needed; no sub-branch halted.**
+
+**Pulls (script `src/p3_hsp.py` — paged, server-side filtered, parquet-cached,
+idempotent (rerun confirmed, identical stats), storage-guarded, seed 42):**
+
+1. `data/raw/hsp_selected_buildings.parquet` — 200 rows (4 cohorts × 50; starts
+   2020-07-01, 2022-07-01, 2024-07-01, 2025-06-11; current_status all "Active",
+   discharge_date all null).
+2. `data/raw/pluto_address.parquet` — 858,602 rows (bbl, address, borough).
+
+**Key decisions:** dataset `h4mf-f24e` used as membership/BBL authority
+(deviation from §4's PDF-only expectation, DISCLOSED; same publisher), PDFs
+cross-checked 199/200 exact on normalized address keys (1 miss = 2025 PDF
+spelling "CLAREDON"/"CLARENDON", same building). Independent PLUTO address→BBL
+resolution: 171/200 (85.5%), 171/171 agreement with dataset BBLs where both
+resolve; all 200 dataset BBLs present in the P1 PLUTO lot universe. Analysis
+grain = tax lot: 200 selections → 197 distinct bbls (3 shared-lot groups,
+listed in checkpoint/stats). Association rule identical to P2 (W=30, inclusive
+bounds, calendar-date truncation, int64 bbl, explicit class-C); Amendment 3
+window-coverage eligibility applied (0 exclusions).
+
+**Row counts through the waterfall:** 128,120 class-C violations → 7,810 in HSP
+lots → 3,633 eligible in-program heat-season events → **377 zero-complaint
+events at W=30** (§4 floor 30 → PASS; robust to Oct–Jan subset 223 and
+(bbl,day)-dedupe 244).
+
+**Anomalies:** shared tax lots (2 lots carry distinct buildings; 1 true repeat
+selection 2112 Honeywell Ave in 2020+2024); 2025 PDF street-name typo; nyc.gov
+UA-gating. All benign, none met Rule 9.
+
+**Storage:** data/raw = 90.7 MB total after P3 pulls (Rule 6 fine).
+Stats: `data/p3_stats.json`.

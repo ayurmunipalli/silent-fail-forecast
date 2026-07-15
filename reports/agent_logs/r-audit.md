@@ -175,3 +175,57 @@ Amendment 3 and transparently documented; surfaced for Ayur's awareness, not as 
 under A-GATE's stated, documented, doc-consistent method; branch follows mechanically;
 join mechanics clean; class-C restriction applied; outcome robust to the one
 interpretation fork, which I have flagged for Ayur.
+
+---
+
+### 2026-07-16 — P3 audit (A-AUX) — **SIGN-OFF (binding)**
+
+Standard P3 protocol (not blind): cohort resolution spot-check, ≥30-floor arithmetic,
+HPD-complaints dataset-ID verification-logged check, plus LEAD's asks — reproduce 377
+from the parquets, assess the h4mf-f24e authority deviation (binding call), check the
+version-choice logic. Independent re-derivation in `scratchpad/audit_p3.py`.
+
+**377 re-derived from parquets — EXACT match, every cell:** HSP 200 rows (4×50, all
+Active, 0 discharges, 197 distinct lots / 199 BINs); waterfall class-C→in-HSP **7,810**
+→ −3,944 before program_start → −0/0 coverage → −233 off-season → **3,633 eligible**;
+**zero-311 @W30 = 377** (10.38%, 95 distinct lots); Oct–Jan subset 223/2,214;
+(bbl,day)-dedupe 244. Association = P2 rule (W=30, inclusive, calendar-date, int64 bbl,
+class-C), Amendment-3 coverage eligibility applied (0 exclusions — HSP inspections sit
+well inside coverage). Membership from the authority dataset's earliest program_start
+per lot; my re-derivation used the same and matched.
+
+**Floor arithmetic:** §4 floor = 30. 377 ≥ 30 → **PASS** follows mechanically. Robust:
+both sensitivity readings clear it (Oct–Jan cadence 223 ≥ 30; (bbl,insp)-dedupe 244 ≥
+30) — the PASS side does not depend on the "program seasons" interpretation.
+
+**HPD-complaints dataset-ID verification — LOGGED (protocol requirement met):**
+PROVENANCE P3 section records all three candidate IDs with live status —
+`uwyv-629c` and `a2nx-4u46` login-walled/retired, `ygpa-z7cr` LIVE (2026-07-15) but
+excluded by Amendment 1 item 2 — explicitly noted "logged BEFORE choosing the version."
+
+**Version-choice logic — CORRECT.** Amendment 1 item 2 excludes the merged HPD
+Complaints-and-Problems dataset (ygpa-z7cr) from phase-0 use regardless of liveness;
+A-AUX verified it live but did NOT pull it — exclusion APPLIED, not reinterpreted. With
+two legacy IDs retired and the merged one amendment-excluded, "no HPD complaints dataset
+usable in phase-0" holds → §4's 311-only branch runs, labeled, with the correct
+upper-bound caveat (events may carry an HPD-direct trail invisible to 311). Sound.
+
+**DEVIATION RULING (binding) — h4mf-f24e as membership/BBL authority: CONFORMANT-WITH-
+DISCLOSURE, not a defect.** §4 named PDFs only; A-AUX (a) downloaded + parsed all four
+nyc.gov PDFs (the §4-named source, 50 rows each), (b) ran the §4 address→BBL-via-PLUTO
+resolution independently and REPORTED its rate (171/200 = 85.5%), (c) cross-checked PDF
+↔ dataset membership (199/200 exact; the 1 miss a CLAREDON/CLARENDON spelling variant of
+the same building), (d) used the official same-publisher machine-readable dataset as the
+BBL authority only where validated — where both the PLUTO resolver and the dataset give a
+BBL they agree 171/171 (0 disagreements), and all 200 final BBLs exist in the P1 PLUTO
+lot universe. This STRENGTHENS §4 (raises BBL coverage 85.5%→100% with zero conflict and
+an official cross-validated source) rather than circumventing it; fabricates nothing
+(Rule 1); dataset verified live + logged (Rule 5); deviation disclosed in checkpoint,
+PROVENANCE, and agent log. The lower independent resolution rate is transparently
+reported, not hidden behind the 100% dataset coverage. Ruled conformant.
+
+**Storage:** data/raw = 90.7 MB ≪ 2 GB (Rule 6) ✓.
+
+**VERDICT: SIGN-OFF.** 377 and the full waterfall reproduce exactly; floor PASS is
+mechanical and robust; HPD verification logged; version-choice logic sound; the one
+deviation (h4mf-f24e authority) ruled conformant-with-disclosure.

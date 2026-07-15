@@ -1,0 +1,207 @@
+{
+  "hsp_rows": 200,
+  "hsp_cohort_counts": {
+    "2020": 50,
+    "2022": 50,
+    "2024": 50,
+    "2025": 50
+  },
+  "hsp_current_status": {
+    "Active": 200
+  },
+  "hsp_discharge_nonnull": 0,
+  "pdf_meta": {
+    "2020": {
+      "rows_parsed": 50,
+      "residue": [],
+      "bytes": 84396
+    },
+    "2022": {
+      "rows_parsed": 50,
+      "residue": [],
+      "bytes": 108090
+    },
+    "2024": {
+      "rows_parsed": 50,
+      "residue": [
+        "Total Buildings: 50",
+        "1"
+      ],
+      "bytes": 62297
+    },
+    "2025": {
+      "rows_parsed": 50,
+      "residue": [],
+      "bytes": 61769
+    }
+  },
+  "pdf_dataset_crosscheck": {
+    "2020": {
+      "matched": 50,
+      "pdf_only": [],
+      "dataset_only": []
+    },
+    "2022": {
+      "matched": 50,
+      "pdf_only": [],
+      "dataset_only": []
+    },
+    "2024": {
+      "matched": 50,
+      "pdf_only": [],
+      "dataset_only": []
+    },
+    "2025": {
+      "matched": 49,
+      "pdf_only": [
+        "BK|2915|CLAREDON ROAD"
+      ],
+      "dataset_only": [
+        "BK|2915|CLARENDON ROAD"
+      ]
+    }
+  },
+  "pdf_dataset_match_total": 199,
+  "pluto_addr_rows": 858134,
+  "pluto_addr_ambiguous_keys": 4858,
+  "addr_resolution": {
+    "n_hsp": 200,
+    "resolved_via_pluto_address": 171,
+    "rate_pct": 85.5,
+    "dataset_bbl_present": 200,
+    "both_resolved": 171,
+    "agree": 171,
+    "disagree_rows": []
+  },
+  "bbl_in_pluto": 200,
+  "bbl_not_in_pluto": [],
+  "distinct_bbls": 197,
+  "distinct_bins": 199,
+  "shared_lot_rows": [
+    {
+      "bbl": 2031240001,
+      "bin": "2013159",
+      "cohort": 2020,
+      "addr": "883 EAST 180 STREET",
+      "building_id": "66279"
+    },
+    {
+      "bbl": 2031240001,
+      "bin": "2100100",
+      "cohort": 2022,
+      "addr": "2115 HONEYWELL AVENUE",
+      "building_id": "806759"
+    },
+    {
+      "bbl": 2031250006,
+      "bin": "2013177",
+      "cohort": 2020,
+      "addr": "2112 HONEYWELL AVENUE",
+      "building_id": "87089"
+    },
+    {
+      "bbl": 2031250006,
+      "bin": "2013177",
+      "cohort": 2024,
+      "addr": "2112 HONEYWELL AVENUE",
+      "building_id": "87089"
+    },
+    {
+      "bbl": 4067020001,
+      "bin": "4451515",
+      "cohort": 2025,
+      "addr": "150-45 73 AVENUE",
+      "building_id": "948748"
+    },
+    {
+      "bbl": 4067020001,
+      "bin": "4451514",
+      "cohort": 2025,
+      "addr": "150-41 73 AVENUE",
+      "building_id": "810626"
+    }
+  ],
+  "c311_rows_used": 1731182,
+  "c311_coverage": [
+    "2019-06-01",
+    "2026-07-13"
+  ],
+  "viol_rows_in": 128121,
+  "viol_class_C": 128120,
+  "viol_in_hsp_buildings_all_time": 7810,
+  "viol_excluded_before_program_start": 3944,
+  "viol_excluded_coverage_left_edge": 0,
+  "viol_excluded_coverage_right_edge": 0,
+  "viol_excluded_offseason_jun_sep": 233,
+  "hsp_eligible_violation_events": 3633,
+  "zero_complaint_events_w30": 377,
+  "pct_zero": 10.38,
+  "zero_events_octjan_subset": 223,
+  "events_octjan_subset": 2214,
+  "zero_events_bbl_day_deduped": 244,
+  "zero_event_distinct_buildings": 95,
+  "per_cohort_season": {
+    "2020": {
+      "2020-21": {
+        "events": 227,
+        "zero": 30
+      },
+      "2021-22": {
+        "events": 112,
+        "zero": 13
+      },
+      "2022-23": {
+        "events": 137,
+        "zero": 26
+      },
+      "2023-24": {
+        "events": 191,
+        "zero": 46
+      },
+      "2024-25": {
+        "events": 93,
+        "zero": 1
+      },
+      "2025-26": {
+        "events": 162,
+        "zero": 3
+      }
+    },
+    "2022": {
+      "2022-23": {
+        "events": 289,
+        "zero": 25
+      },
+      "2023-24": {
+        "events": 362,
+        "zero": 38
+      },
+      "2024-25": {
+        "events": 337,
+        "zero": 44
+      },
+      "2025-26": {
+        "events": 184,
+        "zero": 18
+      }
+    },
+    "2024": {
+      "2024-25": {
+        "events": 397,
+        "zero": 40
+      },
+      "2025-26": {
+        "events": 362,
+        "zero": 46
+      }
+    },
+    "2025": {
+      "2025-26": {
+        "events": 780,
+        "zero": 47
+      }
+    }
+  },
+  "floor": 30,
+  "p3_verdict": "PASS"
+}
