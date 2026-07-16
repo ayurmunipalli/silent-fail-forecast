@@ -90,3 +90,5 @@ entry. Storage ≈ 418 MB. 2026-27 untouched. No Rule-9 conditions. Reported to
 LEAD; idle pending R-AUDIT S3a / G2.
 
 **M3 | 2026-07-16 | S3a REJECT cycle 1 resolved:** corrected the 5 hand-transcribed "mean any-311 p@250" cells in s3a_baselines.md to the s3a_stats.json values (B0 .6392, B1 .5744, B2 .6768, B3 .8304, B4 .8096; re-verified against stats.json before editing) and tightened the IPW-weight range to ~1.0–4.0 (max applied weight over positives 3.97). Documentation-only; no code change, no re-run, nothing else touched.
+
+**M4 | 2026-07-16 | Clerical:** hyperparam_grid.md status header updated from stale "PROPOSED / not locked until G1" to "APPROVED at G1 by Ayur (2026-07-16), ratified as pre-registration by Amendment 2 (commit 9eafc29); LOCKS at G2." Header line only; no other content changed.

@@ -1,6 +1,6 @@
 # Hyperparameter grid proposal — silent-fail-forecast — posted for G1 approval
 
-**Status: PROPOSED (A-MODEL, 2026-07-16). Not locked until Ayur approves at G1.**
+**Status: APPROVED at G1 by Ayur (2026-07-16), ratified as the pre-registration by model_spec.md Amendment 2 (commit 9eafc29); LOCKS at G2.** (Header updated post-approval; proposed A-MODEL 2026-07-16. No other content changed since approval.)
 Per spec §8: grid frozen before any 2026-27 contact is possible, i.e., before the
 Oct 1 model freeze. No data was used to produce this proposal beyond the signed-off
 S1 scale numbers (s1_stats.json, process_log B21/B23) and phase-0 descriptives

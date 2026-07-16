@@ -702,3 +702,50 @@ correction introduced nothing else; everything verified clean in the first pass
 (baselines-before-primary, B3/B2 re-derivation, B4 effort + winners,
 Amendment-1 boundary, clip-floor inertness, ports, guards, metric definitions)
 stands. S3a clears.
+
+## 2026-07-16 — G2 gate-packet audit: outputs/checkpoints/g2_packet.md
+
+Gate-packet protocol. Cross-checked vs my r-audit.md S2/S3a sections,
+`s3a_stats.json`, `hyperparam_grid.md`, `model_spec.md` Amendment 2, the ledger,
+and git.
+
+- **(1) §1 leakage subsection VERBATIM:** extracted my r-audit.md S2
+  TEMPORAL-LEAKAGE subsection and the packet's quoted block, stripped the
+  blockquote prefixes, and diffed — **character-identical, 43/43 lines, nothing
+  elided.**
+- **(2) §2 numbers trace:** the baseline table (AP / p@250 / zero-311 p@250)
+  reproduces `s3a_stats.json` `summary_means` for all five baselines (rounded).
+  The in-sample-caveat numbers (B4 0.440 vs 0.422 / 0.454 vs 0.434; zero-311
+  0.164 vs 0.124) round correctly from my re-derived 0.4395/0.4216/0.4543/0.4339/
+  0.164/0.124. Effort/clip-floor/guards/Amendment-1/sequencing all match my S3a
+  section. Commit `07df605` exists, contains the S3a artifacts, its committed
+  `s3a_baselines.md` carries the CORRECTED any-311 column, and its tree holds no
+  S3b/primary code (src/ = p1–p4,s1,s2,s3a). Ledger B42–B48 all present and
+  support the claims.
+- **(3) §3 grid-lock matches Amendment 2:** the packet's "approved at G1 +
+  ratified as pre-registration by Amendment 2 (commit 9eafc29) + G2 LOCKS it"
+  matches Amendment 2 ("grid ... as posted at G1 and approved ... now the
+  pre-registration"; "G2 = ... grid lock") and the grid doc's own §8 (G1
+  approval freezes the candidate sets; winning configs additionally frozen at
+  G2). Commit 9eafc29 verified.
+- **(4) No recommendation language:** only the disclaimer "recommends nothing.
+  Adjudication is Ayur's." No GO/approve/proceed nudge.
+- **(5) Complete:** all three Amendment-2 G2 components present — §1 leakage
+  sign-off, §2 baselines committed, §3 grid lock.
+- **(6) Reject cycle accurate:** §2's "1 REJECT (5 hand-transcribed cells;
+  code/stats correct) → corrected → re-audit SIGN-OFF with source-integrity
+  re-verification; counter closed at 1" matches ledger B44–B48 and my r-audit
+  record — neither hidden nor overstated.
+
+**Observation (non-blocking, not a packet defect):** `hyperparam_grid.md` still
+carries the stale status header "Status: PROPOSED … Not locked until Ayur
+approves at G1," even though G1 approval landed via Amendment 2 / commit 9eafc29.
+The packet does NOT propagate this — it accurately states the grid was approved
+at G1 and locks at G2 — and the grid doc's substantive §8 agrees. Suggest LEAD/
+A-MODEL refresh that one header line so Ayur isn't confused if he opens the doc
+during G2 review. Does not affect the packet or the gate decision.
+
+**G2 PACKET VERDICT: SIGN-OFF.** Leakage subsection is a character-faithful
+verbatim copy; every §2 number traces; §3 grid-lock matches Amendment 2; no
+recommendation language; all three components present; the reject cycle is
+represented accurately. Clear to reach Ayur; adjudication is Ayur's alone.
