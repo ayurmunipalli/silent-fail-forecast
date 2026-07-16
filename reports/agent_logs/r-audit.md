@@ -422,3 +422,48 @@ Token never printed.
 live ygpa year-probes re-verified; all five ledger items cleared; storage,
 idempotency, set-level spine/registration identity, credential hygiene, and
 2026-27 sanctity all pass. No fabrication, no silent edits, no Rule-9 condition.
+
+## 2026-07-16 — G1 gate-packet audit (LEAD): outputs/checkpoints/g1_packet.md
+
+Gate-packet protocol (numbers traced to checkpoints; no recommendation language).
+Sources cross-checked: my S1 section above, `a-data.md`, `s1_stats.json`,
+`hyperparam_grid.md` (status PROPOSED — the legitimate source for the grid
+section, which presents the proposal for approval), `model_spec.md` Amendment 1,
+`process_log.md` ledger, and git.
+
+- **(1) Number tracing — all clear.** §1 S1 figures reproduce my signed-off S1
+  section exactly (IDs 7/7; union 93,022+1,645,614=1,738,636, dedupe 0,
+  deliverable 1,731,513, range …2026-07-13; spine 181,863 set-equal / 9-of-9;
+  pulls 149,585 @2017-10-01, ctx 2,012,740, contacts 782,024, PLUTO 858,602,
+  ygpa 1,754,951 in 7 disjoint parts, dup 0; storage 341.6 MB; dup-flag Y
+  761,130/43.4%; 0 rows ≥ 2026-10-01). §2 grid figures reproduce
+  `hyperparam_grid.md`: net Cartesian 2,592 (3·2·2·4·3·2·3·3 = 2,592, verified),
+  randomized n=60 seed 42; B4 6,561 / 59,049; clip-floor {0.02,0.05,0.10};
+  180 configs × 5 folds (v ∈ 2021-22…2025-26); batch 8192 / 200 ep / patience
+  20; λ, u*, μ₁, μ₂ candidate sets verbatim; criterion-3 T/α/W=30 faithful to
+  grid §7. §3 traces to Amendment 1 + ledger B7–B10. Commit `fcbdc81` exists and
+  contains S1 artifacts + Amendment 1 + my S1 sign-off (verified via git). Ledger
+  B7–B10, B21, B23 all present and support the cited claims.
+- **(2) No recommendation language.** Packet states criteria and contents only;
+  header explicitly "recommends nothing. Adjudication is Ayur's." No GO/approve
+  nudge anywhere. ("audited sound", "verified genuine" report audit-trail status
+  of disclosed items, not a gate recommendation — acceptable.)
+- **(3) FLAG faithful, non-resolving.** The spec-§12 ("G1 = data/features +
+  leakage sign-off") vs plan-§2/§3 (G1 between S1 and S2; leakage gated inside
+  S2) conflict is stated accurately; cites spec > plan; says "flagged, not
+  resolved"; lays out the plan-sequencing consequence (clears DATA+GRID+R-A)
+  while deferring to Ayur ("unless Ayur re-scopes"). Presents the fork, does not
+  pick it. The packet's DATA+GRID+R-A scope matches plan §3 step 4's explicit G1
+  definition — building on the plan's operative definition while flagging the
+  broader spec reading is the correct handling.
+- **(4) No threshold misstated.** Criterion-3 pass (T > 0 AND one-sided exact
+  sign test, α = 0.05) compressed faithfully. §10 criteria-1/2 margins (1.35×,
+  0.90×) are correctly NOT restated (out of G1 scope) — no misstatement risk.
+  Storage budget 2 GB correct.
+- **(5) Complete.** All three plan §3 step-4 components present: §1 S1 coverage,
+  §2 grid proposal, §3 R-A resolution.
+
+**VERDICT: SIGN-OFF.** Every number traces to a signed-off source (or the
+PROPOSED grid it is presenting); no recommendation language; the gate-scope
+FLAG is faithful and unresolved; no threshold misstated; all three required
+components present. The packet is clear to reach Ayur; adjudication is Ayur's.
