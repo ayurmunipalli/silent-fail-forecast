@@ -1,79 +1,92 @@
-# plan.md — silent-fail-forecast — phase-0 operational plan
+# plan.md — silent-fail-forecast — BUILD PHASE operational plan
 
-Operationalizes the APPROVED `phase0_probe.md` (incl. Amendments 1–2). This file
-carries WHO does WHAT in WHAT ORDER; scientific definitions (probes, thresholds,
-gate semantics) live in the probe doc and are not restated here — if anything in
-this file conflicts with `phase0_probe.md`, the probe doc wins; flag, don't resolve.
-Behavioral rules live in `CLAUDE.md`.
+Operationalizes the FROZEN `model_spec.md`. Scientific definitions live in the
+spec; if this file conflicts with it, the spec wins — flag, don't resolve.
+Behavioral rules live in `CLAUDE.md` (build-phase version). Supersedes the
+phase-0 plan.md (archived in git history; phase-0 is closed, verdict GO).
+
+**The build-phase deadline is structural: the primary model artifact is FROZEN
+and committed BEFORE OCT 1, 2026 (spec §4). Every stage below serves that date.**
 
 ---
 
 ## 1. Roster and model binding
 
-| Agent | Role (one task each) | Model | Audited by |
+| Agent | Role (one lane each) | Model | Audited by |
 |---|---|---|---|
-| **LEAD** | Orchestration only: spawns, sequences, commits, maintains process log, compiles memo. Does NO analysis and writes NO pipeline code. | `claude-fable-5` | R-AUDIT (memo check) |
-| **A-PULL** | P1: bootstrap imports (R4 artifacts + sha256) and all data pulls (311 complaint-level, violations, PLUTO). | `claude-fable-5` | R-AUDIT |
-| **A-GATE** | P2: incident-association join, gate tables at W=14/W=30, lag distribution. The verdict-bearing computation. | `claude-fable-5` | R-AUDIT (independent re-derivation, binding) |
-| **A-AUX** | P3 (HSP cohorts + detectability) and P4 (zero-mass descriptives). | `claude-fable-5` | R-AUDIT |
-| **R-AUDIT** | Audits every stage IN ORDER, binding sign-off per stage. Peer instance, isolated context, cross-family model by design (decorrelated blind spots). | `claude-opus-4-8` | — |
+| **LEAD** | Orchestration only (delegate mode): spawn, sequence, commit, process log, gate packets for Ayur. No analysis, no code. | `claude-fable-5` | R-AUDIT (gate packets) |
+| **A-DATA** | S1: all pulls (refresh 311 union; registrations + contacts; HPD context; full PLUTO attributes; [ygpa-z7cr per R-A]); spine verification. | `claude-fable-5` | R-AUDIT |
+| **A-FEAT** | S2: TWO feature frames — (a) WFF-recipe 30-feature frame for B3 scoring, re-implemented from the read-only WFF `s2_features.py`; (b) this project's families 1–6 (+7 per R-A) with availability masks. | `claude-fable-5` | R-AUDIT (incl. the binding TEMPORAL-LEAKAGE protocol, spec §1/§7/§12) |
+| **A-MODEL** | S3a: baselines B0–B4 + grid proposal. S3b (only after G2): two-head net per spec §3, forward-chaining validation, 5-seed validation spread, freeze candidate. | `claude-fable-5` | R-AUDIT (incl. BLIND re-derivation of the censored-likelihood implementation) |
+| **R-AUDIT** | Binding per-stage sign-offs, in order. Cross-family by design. | `claude-opus-4-8` | — |
 
-**Model binding is enforced by `.claude/agents/` definition files** (lead.md,
-a-pull.md, a-gate.md, a-aux.md, r-audit.md). Absence of a definition file causes
-silent model flattening (known failure mode, prior repos) — the LEAD verifies all
-five files exist and carry the exact model strings above BEFORE spawning anyone,
-and halts if any is missing or altered.
+`.claude/agents/` files bind the models; LEAD verifies all five files + exact
+model strings before spawning, halts on any mismatch (silent-flattening guard).
 
-## 2. Execution topology
+## 2. Topology
 
 ```
-                       ┌─> A-GATE (P2) ──[R-AUDIT: re-derivation, BINDING]──┐
-A-PULL (P1) ─[R-AUDIT]─┤                                                    ├─> LEAD memo ─[R-AUDIT: memo-vs-thresholds]─> AYUR adjudicates
-                       └─> A-AUX (P3, P4) ──[R-AUDIT: P3, then P4]──────────┘
+A-DATA(S1) ─[R-AUDIT]─[G1: Ayur]─> A-FEAT(S2) ─[R-AUDIT+LEAK]─> A-MODEL(S3a: B0–B4)
+   grid proposal posted at G1 ┘                                        │
+                                             ─[R-AUDIT]─[G2: Ayur]─> S3b: primary net
+                                                                        │
+                                        ─[R-AUDIT blind-loss]─[FREEZE gate: Ayur, pre-Oct-1]─> HALT until G3 (summer 2027)
 ```
+All communication through LEAD; workers never commit, spawn, or cross-talk.
+No parallel worker lanes this phase — the pipeline is linear by dependency;
+parallelism would add coordination cost, not speed (simplicity ruling).
 
-- Everything routes through the LEAD: workers never message each other, never
-  spawn anyone, never commit. Worker finishes → reports to LEAD → LEAD requests
-  the matching R-AUDIT pass → sign-off lands → LEAD commits the stage → LEAD
-  dispatches the next task.
-- A-GATE and A-AUX run IN PARALLEL after P1 sign-off (P2, P3, P4 all depend only
-  on P1's caches; nothing depends on each other).
-- R-AUDIT audits stages in completion order, one at a time. Its P2 pass follows
-  the blind protocol in `.claude/agents/r-audit.md`: re-derive gate cells from
-  the parquets + probe doc FIRST, read A-GATE's checkpoint only after.
-- The memo is compiled by the LEAD from signed-off checkpoints, cites thresholds
-  VERBATIM from the probe doc, recommends nothing on a HOLD, and is itself
-  audited (memo-vs-thresholds check) before reaching Ayur.
+## 3. Ordered process (one commit + process-log entries per step)
 
-## 3. Ordered process (each numbered step = one process-log entry; steps 2–8 each end in one commit)
+1. LEAD: verify agent files/model strings; open process_log; spawn team.
+   **R-A CHECK:** if spec §0 R-A (ygpa-z7cr admit/exclude) is unruled, dispatch
+   S1 WITHOUT that branch and raise a standing stop for Ayur's one-word ruling;
+   the branch (one pull + family 7) merges in whenever the ruling lands, and G1
+   cannot clear without it.
+2. A-DATA S1: verify every dataset ID live (Rule 5); refresh the 311 union to
+   the current date (Amendment-3 arithmetic + seam check re-run); pull
+   registrations, contacts, HPD context classes, full PLUTO attributes;
+   verify the imported R4 spine covers 2017-18…2025-26. → R-AUDIT S1 pass.
+3. A-MODEL: grid proposal posted (`outputs/checkpoints/hyperparam_grid.md`) —
+   encoder width/depth, λ, u*, LR, B4 grids, the §10-criterion-3 statistic.
+4. **G1 (Ayur):** S1 coverage report + grid proposal + R-A resolution. HALT until approval.
+5. A-FEAT S2: both feature frames; masks; null audit; byte-identical rerun
+   check. → R-AUDIT S2 pass INCLUDING the temporal-leakage protocol (every
+   feature's timestamp lineage vs the Oct-1 rule; binding; its own section of
+   the sign-off).
+6. A-MODEL S3a: B0, B1, B2 ported verbatim; B3 = frozen booster loaded (tree-count
+   assertion) scored on the WFF-recipe frame; B4 two-stage GBM built with full
+   effort (it is the bar, not a strawman). Forward-chaining validation only,
+   v ∈ {2021-22…2025-26 per mask coverage}; committed BEFORE any primary code
+   exists. → R-AUDIT S3a pass.
+7. **G2 (Ayur):** baselines committed + grid locked. HALT until approval.
+8. A-MODEL S3b: two-head net per spec §3 exactly; selection on validation only;
+   5-seed VALIDATION spread (seeds 42–46, hyperparams fixed); freeze candidate
+   = seed-42 artifact + config + feature recipe hashes. → R-AUDIT S3b pass
+   INCLUDING blind loss re-derivation: from spec §3 alone, R-AUDIT independently
+   implements the likelihood and reproduces training-set loss values on a fixed
+   batch before reading A-MODEL's code.
+9. **FREEZE gate (Ayur, hard deadline pre-Oct-1):** frozen artifacts committed;
+   PROVENANCE freeze entry; repo enters dormancy. LEAD announces and HALTS.
+10. G3 (summer 2027) is NOT part of this run. Nothing may touch season 2026-27.
 
-0. Ayur: manual setup (repo init, `.env`, `<WFF_PATH>` known, files in place).
-1. LEAD: verify `.claude/agents/` files + model strings; open `reports/process_log.md`; spawn R-AUDIT (idle) and A-PULL.
-2. A-PULL: bootstrap — R4 imports by copy + sha256 → PROVENANCE. LEAD commits.
-3. A-PULL: P1 pulls per probe doc §2 (+ fresh violations, PLUTO). → R-AUDIT P1 pass (row counts vs PROVENANCE, ID verification, null-bbl accounting, storage). LEAD commits.
-4. LEAD: dispatch A-GATE (P2) and A-AUX (P3) in parallel.
-5. A-GATE: P2 per probe doc §3 as amended — both windows, one join; gate evaluated at W=14; HOLD branch semantics; lag table mandatory. → R-AUDIT P2 pass (blind re-derivation + join audit: window bound inclusivity, timezone/date truncation, duplicate violation rows, bbl dtype/leading zeros, unit-count join coverage). BINDING. LEAD commits.
-6. A-AUX: P3 per probe doc §4 (HSP lists; unlocatable → `manual_downloads.md` + HALT that sub-branch for Ayur; ≥30-event floor). → R-AUDIT P3 pass. LEAD commits.
-7. A-AUX: P4 per probe doc §5 (Census key from `.env`, never printed; descriptive only). → R-AUDIT P4 pass. LEAD commits.
-8. LEAD: compile `phase0_memo.md` — verdict per §1 as amended, thresholds cited verbatim, R-AUDIT sign-offs referenced. → R-AUDIT memo pass. LEAD commits.
-9. LEAD: announce completion + verdict to Ayur. HALT. Adjudication is Ayur's; nothing further is in scope.
+## 4. Handoff, documentation, escalation
 
-## 4. Handoff protocol (simplicity rules)
+Identical to phase-0 conventions: numbered process_log line per action; task
+text = spec-section pointers, thresholds never restated; per-agent logs are
+deliverables; PROVENANCE.md in the same commit as every stage; REJECT → back
+through LEAD with the defect verbatim; two consecutive rejections on one
+stage, or any Rule-9 condition → HALT and escalate to Ayur (async from phone;
+idle at the stop). Commit format: `S<stage>: <summary> [R-AUDIT: signed-off]`. **Every stage
+commit is immediately pushed to origin** — external timestamps are part of
+the pre-registration evidence (the FREEZE commit especially: its pushed
+timestamp is the proof it predates Oct 1). A failed push is a Rule-9 stop,
+not a shrug.
 
-- One task per agent at a time; task text = a pointer to the probe-doc section +
-  any stage-specific constraints. No task may restate a threshold (drift risk).
-- Every handoff (dispatch, completion, sign-off, rejection) is one numbered line
-  in `reports/process_log.md`: `NN | timestamp | from → to | action | artifact`.
-- R-AUDIT REJECT → LEAD returns the stage to its owner with the defect verbatim;
-  fix; re-audit. Two consecutive rejections on the same stage → LEAD halts and
-  escalates to Ayur (Rule 9).
-- Any CLAUDE.md §9 hard-stop from any agent → LEAD halts the affected branch and
-  escalates. Parallel branches unaffected by the stop continue.
+## 5. Calendar (agent-time; Ayur's involvement = G1, G2, FREEZE approvals + R-A)
 
-## 5. Documentation requirements (meticulous, in order)
-
-1. `reports/process_log.md` — LEAD-maintained numbered ledger; every action, no exceptions. THE ordered record of the run.
-2. `reports/agent_logs/{a-pull,a-gate,a-aux,r-audit}.md` — per-agent: decisions, verified IDs, row counts, anomalies. Deliverables, not scratch.
-3. `outputs/checkpoints/phase0_p{2,3,4}_*.md` + P1's pull report — per probe doc §7.
-4. `data/PROVENANCE.md` — same commit as every stage (Rule 8a).
-5. Commit messages: `P<stage>: <one-line summary> [R-AUDIT: signed-off]`.
+S1+grid ≈ days 1–3 → G1 ≈ end of July → S2 ≈ days 4–8 → S3a ≈ days 8–12 →
+G2 ≈ mid-August → S3b ≈ 2–3 weeks incl. audit cycles → FREEZE target
+**early-to-mid September** (buffer ≥ 2 weeks before the Oct 1 line for a
+rejection cycle). Ayur's paper writing (separate track) is untouched by this
+calendar except the three approvals.
