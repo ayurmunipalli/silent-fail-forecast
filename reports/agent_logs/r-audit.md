@@ -467,3 +467,106 @@ section, which presents the proposal for approval), `model_spec.md` Amendment 1,
 PROPOSED grid it is presenting); no recommendation language; the gate-scope
 FLAG is faithful and unresolved; no threshold misstated; all three required
 components present. The packet is clear to reach Ayur; adjudication is Ayur's.
+
+## 2026-07-16 — S2 audit (A-FEAT): two feature frames
+
+**Materials:** `data/processed/features_b3.parquet` + `features_main.parquet`,
+`src/s2_features.py`, `s2_feature_inventory.md`, `s2_stats.json`, `a-feat.md`,
+PROVENANCE S2 entry, S1-audited caches, read-only WFF `src/s2_features.py` +
+`data/processed/features.parquet` + `data/raw/*` (reference only — nothing
+written there). **Method:** every claim re-derived from the parquets; the B3
+frame compared cell-by-cell to WFF's frozen frame; family-6/7 windows
+recomputed from raw. `.venv/bin/python`, local only.
+
+### Non-leakage checks
+- **Frame structure:** both frames 1,624,255 rows, seasons 2017–2025, 0 duplicate
+  (bbl,season) keys; B3 columns are exactly the 30 WFF `feature_names` + keys +
+  label_c; main = 30 + 11 (c6_) + 8 (c7_) = 49. Family counts reproduce
+  (8/10/3/7/2 + 11 + 8).
+- **B3 fidelity vs WFF frozen frame:** keys and label_c identical on all
+  1,624,255 rows; **26/30 feature columns bit-exact on every row.** The 4
+  differences are all on **one building (BBL 1012410023)**: `ctx_c_prior1`
+  (season 2022), `ctx_c_cum` (2022–25), and the two `ctx_total_*` that contain
+  them — the exact prior1/cum season signature of one added class-C source row
+  in the calendar-2021 bucket. Recipe matches WFF `s2_features.py` line-for-line
+  (families 1–5, `season_of`/`norm_txt` verbatim); WFF's own violations cache
+  also floors at 2017-10-01, so `viol_cnt_*` legitimately match.
+- **Idempotency:** reran `s2_features.py`; both frames + `s2_stats.json`
+  reproduce the recorded sha256 **byte-identically** (`09f8e94d…`, `477d3079…`).
+- **Duplicate-flag both-ways:** reproduced from the frame — covered rows
+  1,086,842; Σevt_all 1,254,133; Σevt_dedupN 699,747; mean per-building Y-share
+  0.1568. No leakage (all inside the pre-cutoff prior-season window); documented
+  faithfully; nothing dropped.
+
+### Disclosed deviations D1–D4
+- **D1 genuine source accrual, NOT a recipe defect:** our S1 ctx cache holds
+  class-C count **8** for (BBL 1012410023, yr 2021); WFF's ctx cache holds **7**.
+  The +1 lives in the source aggregate; the recipe faithfully reproduces each
+  (our B3 `ctx_c_prior1`@2022 = 8.0, WFF = 7.0). Single row accrued between the
+  07-14 and 07-16 pulls. Confirmed genuine.
+- **D2 local reproduction of WFF s1d server-side aggregate:** family-3 columns
+  (`c311_available/_prior1/_prior_cum`) are among the 26 bit-exact columns vs
+  WFF's frame; P311 matrix capped at 2020–2024 so the union's 2019 archive rows
+  are structurally excluded. Reproduction is faithful.
+- **D3** (ctx `yr`/`n` string-on-disk vs the "Int64" note): coerced with an
+  assert on zero parse loss; values identical (fidelity match). Benign.
+- **D4** (apartment free-text noise): normalization is UPPER/strip/collapse only,
+  no fuzzy merge; `c7_apt_share_ps` left uncapped and visible. A disclosed
+  measurement property, not a defect.
+
+### Amendment-1 boundary
+- The B3 frame contains **zero** `c6_`/`c7_` columns; ygpa (`hpd_complaints_heat`)
+  is read only into the eight `c7_*` columns; the 311 union deliverable is the
+  sole complaint source for families 3 and 6. ygpa is structurally confined to
+  family-7 features — no path into anything a loss will consume.
+
+---
+
+### TEMPORAL-LEAKAGE SIGN-OFF (binding, Amendment 2; own subsection)
+
+Every feature's timestamp lineage was traced against the Oct-1-`sy` cutoff:
+
+- **Season-indexed (families 1, 5):** read only seasons `s < sy` (end May 31
+  `sy` < cutoff); rolling state (`last_pos`, `cum_*`, `own_cum_*`) updates only
+  AFTER season `sy` is emitted — verified in code. `portfolio_loo_rate` uses
+  prior-season label aggregates with the index building subtracted (LOO, no
+  self-leak).
+- **Calendar-year (families 2, 3):** read only `yr ≤ sy−1`; the wide matrices
+  carry columns **2014–2024 / 2020–2024** — a `yr == sy` (or 2025) read is a
+  KeyError, i.e. **structurally impossible, not merely avoided**. Calendar
+  `sy−1` ends Dec 31 `sy−1` < cutoff.
+- **Timestamp-windowed (families 6, 7):** every slice goes through `win()`,
+  which **hard-asserts `hi ≤ cutoff`**; all windows have `hi ∈ {Jun 1 sy,
+  cutoff}` ≤ cutoff. Empirically confirmed on the latest dev season 2025: the
+  max timestamp entering any window is **2025-09-30 23:57** (c6 t365) /
+  **2025-05-31 23:42** (c7 ps) — strictly before the 2025-10-01 cutoff.
+- **Masks NULL not zero (spec §2):** per-season checks — masked seasons are
+  **all-NaN, zero literal-zeros** (e.g. `c311_prior1`@2020: 180,157 rows all
+  NaN; `c6_evt_ps`@2019, `c7_apts_ps`@2019 all NaN); available seasons carry
+  **true zeros** for complaint-free buildings (`c311_prior1`@2021: 0 NaN,
+  158,015 zeros). Aggregate NULLs reconcile to season arithmetic exactly (fam3
+  717,570 = seasons 2017–20; fam6/7 ps 537,413 = 2017–19; t730 717,570).
+- **Fam-6/7 unlock one season before fam-3:** reproduced from first-principles
+  date arithmetic — fam-3 needs full calendar 2019 (floor 2019-06-01 leaves it
+  uncovered → masked through 2020-21), while the prior-season window Oct 2019–May
+  2020 is fully covered → fam-6/7 available from 2020-21. Sound.
+- **B3-frame values recomputed from raw:** `c6_evt_t365`@2025 agrees with the
+  frame on **all 181,863** buildings; `c7_apts_ps`@2025 distinct-apartment counts
+  match on spot-checked buildings.
+- **Target-season sanctity:** both frames assert `max(season) == 2025`; **0 rows
+  ≥ season 2026** in either frame; the spine has no 2026 season. Season 2026-27
+  is structurally absent, not merely untouched.
+- **C1/C2 ruling (flagged for R-AUDIT):** the current-vintage PLUTO (family 4)
+  and registration/owner (family 5 `portfolio_size`) snapshots of slowly-varying
+  STRUCTURAL/ownership attributes are **ACCEPTED**, consistent with WFF's
+  R-LEAK precedent — they encode no post-cutoff EVENT information; the
+  event/label-derived signals (`portfolio_loo_rate`) are properly time-indexed.
+
+**LEAKAGE VERDICT: SIGN-OFF.** No Oct-1 violation on any feature; target-season
+reads are structurally impossible; masks are NULL-not-zero; the bright line
+(season 2026-27) is structurally absent from both frames.
+
+**S2 VERDICT: SIGN-OFF.** Fidelity 26/30 with the residual proven to be genuine
+source accrual; both frames idempotent byte-identical; Amendment-1 boundary
+structurally held; D1–D4 accurate; duplicate-flag both-ways faithful; leakage
+sign-off (above) clean. No fabrication, no silent edits, no Rule-9 condition.

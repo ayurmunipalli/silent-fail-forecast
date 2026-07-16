@@ -1,0 +1,408 @@
+{
+  "spine_rows": 1624255,
+  "n_buildings": 181863,
+  "b3_frame": {
+    "rows": 1624255,
+    "n_features": 30,
+    "path": "data/processed/features_b3.parquet",
+    "sha256": "09f8e94df5c51fa66778e17cc2d9bbba0eceb0aeef2453b411d7662ef324fa09",
+    "mb": 27.5,
+    "feature_cols": [
+      "viol_lag1",
+      "viol_lag2",
+      "viol_lag3",
+      "hist_horizon",
+      "viol_recency",
+      "viol_chronicity",
+      "viol_cnt_prior1",
+      "viol_cnt_prior_cum",
+      "ctx_a_prior1",
+      "ctx_a_cum",
+      "ctx_b_prior1",
+      "ctx_b_cum",
+      "ctx_c_prior1",
+      "ctx_c_cum",
+      "ctx_i_prior1",
+      "ctx_i_cum",
+      "ctx_total_prior1",
+      "ctx_total_cum",
+      "c311_available",
+      "c311_prior1",
+      "c311_prior_cum",
+      "building_age",
+      "prewar",
+      "unitsres",
+      "unitstotal",
+      "numfloors",
+      "bldgclass_1",
+      "borough",
+      "portfolio_size",
+      "portfolio_loo_rate"
+    ]
+  },
+  "main_frame": {
+    "rows": 1624255,
+    "n_features": 49,
+    "path": "data/processed/features_main.parquet",
+    "sha256": "477d3079fae0a4a76ee5507739c6f790448caa258c11ea78776583f2e4734090",
+    "mb": 35.4,
+    "family_counts": {
+      "1_viol_hist": 8,
+      "2_hpd_context": 10,
+      "3_311_masked": 3,
+      "4_pluto": 7,
+      "5_owner": 2,
+      "6_complaint_gran": 11,
+      "7_distinct_apts": 8
+    },
+    "feature_cols": [
+      "viol_lag1",
+      "viol_lag2",
+      "viol_lag3",
+      "hist_horizon",
+      "viol_recency",
+      "viol_chronicity",
+      "viol_cnt_prior1",
+      "viol_cnt_prior_cum",
+      "ctx_a_prior1",
+      "ctx_a_cum",
+      "ctx_b_prior1",
+      "ctx_b_cum",
+      "ctx_c_prior1",
+      "ctx_c_cum",
+      "ctx_i_prior1",
+      "ctx_i_cum",
+      "ctx_total_prior1",
+      "ctx_total_cum",
+      "c311_available",
+      "c311_prior1",
+      "c311_prior_cum",
+      "building_age",
+      "prewar",
+      "unitsres",
+      "unitstotal",
+      "numfloors",
+      "bldgclass_1",
+      "borough",
+      "portfolio_size",
+      "portfolio_loo_rate",
+      "c6_available_ps",
+      "c6_available_t365",
+      "c6_available_t730",
+      "c6_evt_ps",
+      "c6_days_ps",
+      "c6_dup_intensity_ps",
+      "c6_evt_t365",
+      "c6_evt_t730",
+      "c6_gap_median_t730",
+      "c6_gap_min_t730",
+      "c6_days_since_last_t730",
+      "c7_available_ps",
+      "c7_available_t730",
+      "c7_apts_ps",
+      "c7_apt_share_ps",
+      "c7_evt_all_ps",
+      "c7_evt_dedupN_ps",
+      "c7_dupflag_share_ps",
+      "c7_apts_t730"
+    ]
+  },
+  "sources": {
+    "viol_rows_used": 134569,
+    "ctx_rows_used": 1918180,
+    "union_rows": 1731513,
+    "union_rows_on_spine": 1651202,
+    "ygpa_rows": 1754951,
+    "ygpa_rows_on_spine": 1668703,
+    "ygpa_apartment_rows": 620244,
+    "pluto_linked_bbl": 180831,
+    "owner_contacts_ownertype_rows": 214049,
+    "owner_contacts_keyless": 748,
+    "bbl_with_owner_key": 170207,
+    "bbl_owner_coverage_pct": 93.59
+  },
+  "b3_categorical_vocab_novel": {
+    "bldgclass_1": 0,
+    "borough": 0
+  },
+  "mask_coverage": [
+    {
+      "season": 2017,
+      "c311_available": 0,
+      "avail_ps": 0,
+      "avail_t365": 0,
+      "avail_t730": 0,
+      "rows": 178503
+    },
+    {
+      "season": 2018,
+      "c311_available": 0,
+      "avail_ps": 0,
+      "avail_t365": 0,
+      "avail_t730": 0,
+      "rows": 179143
+    },
+    {
+      "season": 2019,
+      "c311_available": 0,
+      "avail_ps": 0,
+      "avail_t365": 0,
+      "avail_t730": 0,
+      "rows": 179767
+    },
+    {
+      "season": 2020,
+      "c311_available": 0,
+      "avail_ps": 1,
+      "avail_t365": 1,
+      "avail_t730": 0,
+      "rows": 180157
+    },
+    {
+      "season": 2021,
+      "c311_available": 1,
+      "avail_ps": 1,
+      "avail_t365": 1,
+      "avail_t730": 1,
+      "rows": 180547
+    },
+    {
+      "season": 2022,
+      "c311_available": 1,
+      "avail_ps": 1,
+      "avail_t365": 1,
+      "avail_t730": 1,
+      "rows": 181087
+    },
+    {
+      "season": 2023,
+      "c311_available": 1,
+      "avail_ps": 1,
+      "avail_t365": 1,
+      "avail_t730": 1,
+      "rows": 181470
+    },
+    {
+      "season": 2024,
+      "c311_available": 1,
+      "avail_ps": 1,
+      "avail_t365": 1,
+      "avail_t730": 1,
+      "rows": 181718
+    },
+    {
+      "season": 2025,
+      "c311_available": 1,
+      "avail_ps": 1,
+      "avail_t365": 1,
+      "avail_t730": 1,
+      "rows": 181863
+    }
+  ],
+  "dupflag_bothways": {
+    "covered_rows": 1086842,
+    "evt_all_sum": 1254133.0,
+    "evt_dedupN_sum": 699747.0,
+    "mean_dup_share_where_defined": 0.1568
+  },
+  "null_audit_b3": {
+    "viol_lag1": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "viol_lag2": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "viol_lag3": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "hist_horizon": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "viol_recency": {
+      "n": 1504470,
+      "pct": 92.625
+    },
+    "viol_chronicity": {
+      "n": 181863,
+      "pct": 11.197
+    },
+    "viol_cnt_prior1": {
+      "n": 178503,
+      "pct": 10.99
+    },
+    "viol_cnt_prior_cum": {
+      "n": 178503,
+      "pct": 10.99
+    },
+    "ctx_a_prior1": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "ctx_a_cum": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "ctx_b_prior1": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "ctx_b_cum": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "ctx_c_prior1": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "ctx_c_cum": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "ctx_i_prior1": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "ctx_i_cum": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "ctx_total_prior1": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "ctx_total_cum": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "c311_available": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "c311_prior1": {
+      "n": 717570,
+      "pct": 44.178
+    },
+    "c311_prior_cum": {
+      "n": 717570,
+      "pct": 44.178
+    },
+    "building_age": {
+      "n": 17037,
+      "pct": 1.049
+    },
+    "prewar": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "unitsres": {
+      "n": 9383,
+      "pct": 0.578
+    },
+    "unitstotal": {
+      "n": 9374,
+      "pct": 0.577
+    },
+    "numfloors": {
+      "n": 20056,
+      "pct": 1.235
+    },
+    "bldgclass_1": {
+      "n": 9306,
+      "pct": 0.573
+    },
+    "borough": {
+      "n": 9288,
+      "pct": 0.572
+    },
+    "portfolio_size": {
+      "n": 103964,
+      "pct": 6.401
+    },
+    "portfolio_loo_rate": {
+      "n": 1026714,
+      "pct": 63.211
+    }
+  },
+  "null_audit_main_fam67": {
+    "c6_available_ps": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "c6_available_t365": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "c6_available_t730": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "c6_evt_ps": {
+      "n": 537413,
+      "pct": 33.087
+    },
+    "c6_days_ps": {
+      "n": 537413,
+      "pct": 33.087
+    },
+    "c6_dup_intensity_ps": {
+      "n": 1472037,
+      "pct": 90.628
+    },
+    "c6_evt_t365": {
+      "n": 537413,
+      "pct": 33.087
+    },
+    "c6_evt_t730": {
+      "n": 717570,
+      "pct": 44.178
+    },
+    "c6_gap_median_t730": {
+      "n": 1495561,
+      "pct": 92.077
+    },
+    "c6_gap_min_t730": {
+      "n": 1495561,
+      "pct": 92.077
+    },
+    "c6_days_since_last_t730": {
+      "n": 1438349,
+      "pct": 88.554
+    },
+    "c7_available_ps": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "c7_available_t730": {
+      "n": 0,
+      "pct": 0.0
+    },
+    "c7_apts_ps": {
+      "n": 537413,
+      "pct": 33.087
+    },
+    "c7_apt_share_ps": {
+      "n": 547724,
+      "pct": 33.722
+    },
+    "c7_evt_all_ps": {
+      "n": 537413,
+      "pct": 33.087
+    },
+    "c7_evt_dedupN_ps": {
+      "n": 537413,
+      "pct": 33.087
+    },
+    "c7_dupflag_share_ps": {
+      "n": 1470212,
+      "pct": 90.516
+    },
+    "c7_apts_t730": {
+      "n": 717570,
+      "pct": 44.178
+    }
+  }
+}

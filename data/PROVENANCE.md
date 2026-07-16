@@ -365,3 +365,47 @@ nondeterminism (proven by the byte-identical third run).
 (pre-season; the 2026-27 season window has not begun).
 **Anomalies:** the two external kills (documented above and in
 `reports/agent_logs/a-data.md`); otherwise none.
+
+---
+
+## 2026-07-16 — S2: two feature frames (A-FEAT)
+
+**Stage script:** `src/s2_features.py` — one idempotent script, reads ONLY local
+S1-audited caches + the read-only frozen spine (no network), seed 42 (no sampling
+occurs). Reran to **byte-identical** outputs (sha256 equal across runs, all three
+artifacts). WFF repo touched read-only (recipe reference; nothing written).
+
+**Outputs (`data/processed/`, one row per spine row — 1,624,255 each):**
+
+| File | Features | Size | sha256 |
+|---|---|---|---|
+| `features_b3.parquet` | 30 — WFF recipe, frozen-model `feature_names` order, categorical vocabularies fixed from the model's `pandas_categorical` footer | 27.5 MB | `09f8e94df5c51fa66778e17cc2d9bbba0eceb0aeef2453b411d7662ef324fa09` |
+| `features_main.parquet` | 49 — families 1–5 (30, WFF semantics) + 6 (11, union complaint-granularity) + 7 (8, ygpa distinct-apartments per spec Amendment 1) | 35.4 MB | `477d3079fae0a4a76ee5507739c6f790448caa258c11ea78776583f2e4734090` |
+
+**Lineage checkpoint:** `outputs/checkpoints/s2_feature_inventory.md` (per-feature
+source + exact leakage window + mask rule, WFF S2-report format) and
+`outputs/checkpoints/s2_stats.json` (full null audit, mask coverage, both-ways
+duplicate-flag magnitudes).
+
+**Fidelity verification:** B3 frame compared key-for-key against WFF's own frozen
+`features.parquet` — **26/30 columns exactly equal on all 1,624,255 rows**; the
+residual is ONE building (BBL 1012410023) whose class-C context count for calendar
+2021 grew by 1 between WFF's 2026-07-14 pull and S1's 2026-07-16 pull (source
+accrual affecting 5 cells across `ctx_c_*`/`ctx_total_*`; disclosed as inventory
+D1, not patched). All family-1–5 NULL-audit counts match WFF's committed S2
+report exactly.
+
+**Leakage structure (for R-AUDIT's binding S2 protocol):** year matrices capped at
+2024; season-indexed state rolls only after emission; every family-6/7 timestamp
+slice passes through a guard asserting window_hi ≤ the season's Oct-1 cutoff;
+family-6/7 availability = window left edge ≥ 2019-06-01 floor, masked NULL never
+zero-filled; frames assert max(season) == 2025. **Season 2026-27: untouched.**
+
+**Amendment-1 boundary:** ygpa-z7cr enters ONLY the `c7_*` feature columns —
+no loss input of any kind. Duplicate-flag handling ruled BOTH-WAYS and documented
+(inventory family-7 section; standing flag B21 closed at S2).
+
+**Anomalies:** none (Rule-9 clean). Disclosed observations: single-building ctx
+accrual (D1); ctx cache `yr`/`n` stored as strings vs the S1 "Int64" note —
+coerced with asserted zero parse loss (D3). **Storage:** data/ + imports/ =
+**388 MB** (≤ 2 GB, fine).
