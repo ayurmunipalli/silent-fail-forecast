@@ -409,3 +409,44 @@ no loss input of any kind. Duplicate-flag handling ruled BOTH-WAYS and documente
 accrual (D1); ctx cache `yr`/`n` stored as strings vs the S1 "Int64" note —
 coerced with asserted zero parse loss (D3). **Storage:** data/ + imports/ =
 **388 MB** (≤ 2 GB, fine).
+
+---
+
+## 2026-07-16 — S3a: baselines B0–B4 (A-MODEL)
+
+**Stage script:** `src/s3a_baselines.py` — idempotent, RESUMABLE (per-unit json
+checkpoints under `outputs/checkpoints/s3a_work/`; two external-kill incidents
+at S1 motivated bounded foreground runs; this stage ran as 6 bounded
+invocations, each ≤ ~9 min, zero lost work). Seed 42, no network.
+
+**Inputs (all read-only, all S1/S2-audited):** `features_main.parquet` (sha256
+in S2 checkpoint), `features_b3.parquet`, `hpd_violations_wff.parquet`,
+`c311_heat_complaints.parquet` (311 union deliverable — sole propensity-target
+source per the Amendment-1 boundary), `imports/primary_lgbm.txt` (343-tree
+assertion PASSED at load).
+
+**Environment change:** `.venv` gained `lightgbm==4.6.0`, `scikit-learn==1.9.0`
+(+ scipy/joblib/threadpoolctl deps) — first modeling stage; versions recorded
+in `s3a_stats.json` and `b4_frozen_config.json`. LightGBM 4.6.0 matches WFF's
+frozen B3 library version.
+
+**Verbatim ports:** WFF `src/s3_baselines.py` L52–62, L69–78, L81–113,
+L116–147, L150–196, L226–230 (read-only; adaptations disclosed in
+`outputs/checkpoints/s3a_baselines.md`).
+
+**Artifacts written:** `outputs/checkpoints/s3a_baselines.md`,
+`outputs/checkpoints/s3a_stats.json`, `outputs/checkpoints/s3a_work/*`
+(300 stage-1 + 300 stage-2 per-unit results, 5 cached R̂ folds, guards.jsonl
+with 50 recorded guard passes), `outputs/models/b4_propensity_lgbm.txt`
+(95 trees), `outputs/models/b4_risk_lgbm.txt` (282 trees),
+`outputs/models/b4_frozen_config.json`.
+
+**Test-season sanctity:** max season present in any frame/fold/lookback = 2025
+(asserted 50× across 36 sites; both feature frames additionally assert
+max(season)==2025 at load). No 2026-27 contact of any kind.
+
+**Anomalies:** none. Notable non-anomaly findings recorded in the checkpoint:
+stage-1 propensity target prevalence ≈ 0.88 (multiplicity near-universal given
+detection); B4 IPW clip floor never binds (min R̂ = 0.2366 > 0.10).
+
+**Storage after stage:** data/ + imports/ + outputs/ ≈ 418 MB (≤ 2 GB, fine).

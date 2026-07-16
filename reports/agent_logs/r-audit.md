@@ -570,3 +570,135 @@ reads are structurally impossible; masks are NULL-not-zero; the bright line
 source accrual; both frames idempotent byte-identical; Amendment-1 boundary
 structurally held; D1–D4 accurate; duplicate-flag both-ways faithful; leakage
 sign-off (above) clean. No fabrication, no silent edits, no Rule-9 condition.
+
+## 2026-07-16 — S3a audit (A-MODEL): baselines B0–B4 — **REJECT**
+
+**Materials:** `src/s3a_baselines.py`, `s3a_baselines.md`, `s3a_stats.json`,
+`s3a_work/*` (300 s1_prop + 300 s2_risk checkpoints, 5 rhat npz, guards.jsonl,
+winners), `outputs/models/b4_*`, `a-model.md` M2, PROVENANCE, frozen
+`hyperparam_grid.md`, WFF read-only `src/s3_baselines.py`. Method: every metric
+re-derived from persisted data / from scratch; nothing on faith.
+
+### Everything below is VERIFIED CLEAN (sign-off quality)
+- **Baselines-before-primary:** NO S3b/primary code exists anywhere in the repo
+  — `src/` holds only p1–p4, s1, s2, s3a; grep for encoder/two-head/torch/
+  thinning returns nothing. Confirmed current repo state.
+- **B3 tree-count:** 343 = 343 (assertion in code + re-derived from the loaded
+  booster).
+- **B3 fold metrics re-derived FROM SCRATCH** (frozen booster → predict on the
+  B3 frame → AP via `average_precision_score`, p@250 via the seed-42 tie-key):
+  all 5 folds match the checkpoint EXACTLY (AP to 6 dp; p@250 exact). Mean AP
+  0.382286 reproduced.
+- **B2 fold re-derived** (trailing-3 class-C, v=2025): p@250 0.808 and AP
+  0.273389 both match.
+- **Metric definitions consistent:** `average_precision_score` for pr_auc,
+  LightGBM `average_precision` for internal AP/ES; **no trapezoidal PR-AUC**
+  (no `auc()`/`trapz`/`precision_recall_curve` anywhere).
+- **B0/B1/B2 port fidelity vs WFF `s3_baselines.py`:** `season_of`, metric
+  helpers, B2 trailing-3, B1 logistic, B0 score all faithful; disclosed
+  adaptations (dev window 2019+, explicit sort before tie-key, pandas-3
+  categorical-safe MISSING fill, explicit allowed-set guard) are mechanics, not
+  semantics. VAL {2021..2025} correct (2024/25 are DEVELOPMENT per spec §2;
+  2026-27 is the held-out line).
+- **B4 effort genuine:** stage-1 space 6,561 / stage-2 59,049; `sampled_configs`
+  determinism reproduced (seed 42 → winners cfg 5411 ∈ prop sample, cfg 21485 ∈
+  risk sample); 60×5 = 300 checkpoints present per stage. **Winners re-derived
+  from the checkpoint files:** prop cfg 5411 mean AP 0.970318 (runner-up
+  0.970312); risk cfg 21485 mean AP 0.386460 (runner-up 0.386295) — matches the
+  reported near-ties; selection/tie-break logic reproduced. B4 artifacts:
+  propensity 95 trees, risk 282 trees (both match).
+- **B4 effort adjudication (edge-heavy winners on a FROZEN grid):** ACCEPTED.
+  The grid is the Amendment-2 pre-registration (locked at G1); selection ran the
+  full pre-registered search with genuine, checkpointed evidence, and picked the
+  best config by the pre-registered metric. A pre-registered frozen grid with
+  edge winners satisfies the effort check — the alternative (re-opening the grid
+  toward the winners) would be post-hoc and is correctly refused. The n_estimators
+  "edges" are non-binding (ES stopped at 51–162 / 163–433 ≪ the 400/1500
+  ceilings). Re-scoping the grid, if wanted, is a dated Ayur decision at G2.
+- **Stage-1 propensity proxy (grid §5 / Amendment 1):** target y_dup =
+  1{in-season 311-union events ≥ 2} on label_c==1 rows — re-derived
+  train_dup_rate 0.875032 matches; source is the **311 union** deliverable
+  (via `insea311.parquet`), **no ygpa in the target path**. The B4 feature set
+  DOES include the eight `c7_*` columns — this is Amendment-1 (i) (ygpa admitted
+  AS feature family 7); the boundary constrains the propensity SIGNAL/target and
+  the two-head loss, both 311-union-only here. Consistent, not a violation.
+- **Clip-floor inertness:** per-fold train-R̂ mins 0.28–0.51; final-refit R̂ min
+  **0.2366 > 0.10** → share_below_clip 0.0 (no weight ever clipped) — reproduced
+  by reloading `b4_propensity_lgbm.txt` and predicting on dev.
+- **B3 in-sample caveat fairly stated:** v∈{2021,2022,2023} correctly labeled
+  WFF training seasons; out-of-sample folds (2024/25) cited with correct numbers;
+  language stays descriptive; the binding comparison is deferred to G3. No
+  cross-model claim exceeds validation-descriptive language.
+- **ES-watches-v deviation:** the frozen `hyperparam_grid.md` §5 text does say
+  "early stopping 50 on fold v"; honoring it over WFF's v−1 convention is a
+  faithful reading of the pre-registration, disclosed, and applies equally to
+  every tuned arm. lightgbm **4.6.0 = WFF's B3 version** (WFF
+  `frozen_model_config.json` records 4.6.0) — verified.
+- **Test-season sanctity:** 50 guard passes over 36 sites, min touched 2017 /
+  max 2025, **0 guards touching ≥2026**; both frames assert max season 2025.
+
+### DEFECT (the REJECT)
+**`s3a_baselines.md` results table — "mean any-311 p@250" column does not
+reconcile with the machine-generated `s3a_stats.json` (or the fold data I
+re-derived from it).** The other three columns (mean AP, mean p@250, mean
+zero-311 p@250) reconcile EXACTLY for all five baselines; only this column is
+wrong, on every row:
+
+| Baseline | md any-311 | correct (stats.json / re-derived) |
+|---|---|---|
+| B0 | 0.6608 | **0.6392** |
+| B1 | 0.5936 | **0.5744** |
+| B2 | 0.6736 | **0.6768** |
+| B3 | 0.8368 | **0.8304** |
+| B4 | 0.8224 | **0.8096** |
+
+The code and `s3a_stats.json` are CORRECT (the `stage_report` docstring notes
+the md is "authored separately from these numbers" — this is a hand-transcription
+error in the checkpoint, not a modeling bug). But a checkpoint deliverable that
+feeds the G2 packet must reconcile with its source; five non-tracing cells fail
+that bar. **Fix:** correct the five any-311 cells in `s3a_baselines.md` to the
+stats.json values above (no code change; no re-run needed). Then re-audit is a
+one-column recheck.
+
+### Minor note (fix in the same cycle; not the basis for the REJECT)
+- The checkpoint's "IPW weights ran 1.0–4.2" slightly overstates the top: the
+  max weight actually APPLIED (over positives) is **3.97** (min positive R̂
+  0.2518). The 4.2 = 1/min(all-row R̂ 0.2366), but that minimum is a
+  non-positive row that is never weighted. Tighten to ~1.0–4.0. The material
+  inertness claim (no weight clipped) is unaffected and verified.
+
+**S3a VERDICT: REJECT** — single documentation defect (any-311 column
+mis-transcribed vs source) + one minor descriptive imprecision (IPW upper
+bound). All modeling, search, winners, criterion-relevant metrics, ports,
+guards, and Amendment-1 boundary are verified correct. No fabrication; the
+machine source is right; the fix is a five-number correction to the checkpoint.
+
+## 2026-07-16 — S3a re-audit (REJECT cycle 1 → **SIGN-OFF**)
+
+A-MODEL applied the correction (M3). Re-verified per the stated re-audit scope:
+
+- **Corrected column reconciles:** `s3a_baselines.md` any-311 cells now read
+  B0 0.6392 / B1 0.5744 / B2 0.6768 / B3 0.8304 / B4 0.8096 — **exactly** the
+  `s3a_stats.json` `mean_any311_p@250` values (and my prior from-fold
+  re-derivation). The three headline columns are unchanged and still correct.
+- **IPW wording tightened:** now "~1.0–4.0 (max applied weight over positives
+  3.97)" — matches my re-derivation; the mislabeled 4.2 is gone.
+- **Source integrity (not taken on trust — I had no recorded sha of
+  `s3a_stats.json`):** the stats file is internally self-consistent
+  (`per_season` → `summary_means` reproduced for every baseline × all four
+  metrics), a fresh from-scratch B3 fold re-derivation off the frozen booster
+  still matches `per_season` exactly (mean AP 0.382286), and both B4 winners
+  still re-derive from the checkpoints (cfg 5411 / cfg 21485). The source was
+  not altered — the fix corrected the doc to the source, the right direction.
+- **No out-of-scope diffs:** all non-corrected checkpoint content preserved
+  (343 assertion, winners, 0.9703/0.3865, 95/282 trees, guard 50/36, in-sample
+  caveat numbers 0.4395/0.4216/0.4543/0.4339, clip-floor min 0.2366 / share 0).
+  None of the old wrong values (0.6608/0.5936/0.8368/0.8224/"1.0–4.2") remain in
+  the md, PROVENANCE, or process_log. Change is confined to the 5 md cells + IPW
+  wording + the a-model.md M3 note.
+
+**S3a VERDICT (post-correction): SIGN-OFF.** The sole defect is fixed and the
+correction introduced nothing else; everything verified clean in the first pass
+(baselines-before-primary, B3/B2 re-derivation, B4 effort + winners,
+Amendment-1 boundary, clip-floor inertness, ports, guards, metric definitions)
+stands. S3a clears.
