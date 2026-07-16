@@ -237,3 +237,26 @@ identification statement is unchanged.
 
 **Rationale on record:** OSC audit 2019-N-3 documents HPD's internal dedup
 errors; the dataset informs features, it does not carry identification.
+
+**Amendment 2 — G1 adjudication: gate-scope clarification; R-B ratified.**
+Dated 2026-07-16. Author of record: Ayur Munipalli.
+
+**Gate-scope clarification (§12 CLARIFIED, not changed):**
+
+- **G1** = data coverage + grid approval + §0 resolutions.
+- The **temporal-leakage sign-off** is a BINDING condition of stage S2
+(R-AUDIT's S2 protocol); its result is reviewed by Ayur within the G2 packet.
+- **G2** = S2 leakage sign-off + baselines B0–B4 committed + grid lock.
+- **No stage proceeds past a leakage REJECT, regardless of gate timing.**
+
+**R-B ratified (§0, §10):** the grid proposal
+(`outputs/checkpoints/hyperparam_grid.md`, as posted at G1 and approved) and
+the §10 margins as drafted — criterion 1: ≥ 1.35× B3 zero-311-stratum p@250;
+criterion 2: global p@250 ≥ 0.90× B3's; criterion 3: T = median rank-percentile
+improvement (pct_F − pct_B3) over silent-screened HSP buildings at W=30, pass
+= T > 0 by one-sided exact sign test at α = 0.05, computed once at G3 —
+are now the pre-registration.
+
+**Pre-registered addition:** the G3 packet must report the realized n for
+criterion 3 (the count of silent-screened HSP buildings entering the sign
+test) alongside the test result.
