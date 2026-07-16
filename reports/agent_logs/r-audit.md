@@ -328,3 +328,97 @@ initial signature block." No unbacked attribution.
 mechanically derived; no recommendation/adjudication overreach; table matches git + my
 records; deviations match the record. The memo is clear to commit; adjudication is
 Ayur's alone. This closes the phase-0 R-AUDIT chain (P1, P2, P3, P4, memo — all SIGN-OFF).
+
+---
+
+# BUILD PHASE
+
+## 2026-07-16 — S1 audit (A-DATA): all pulls, 311 union refresh, spine verification
+
+**Materials audited:** `reports/agent_logs/a-data.md`, `data/PROVENANCE.md`
+(S1 + continuation entries), `data/s1_stats.json`, `src/s1_pull.py`, the raw
+caches in `data/raw/`, the read-only R4 imports. **Method:** every number
+re-derived by me from the parquets (`.venv/bin/python`); no a-data figure taken
+on faith. Live network checks run unsandboxed (metadata API + count probes are
+not on the sandbox allowlist); the `.env` read is the recorded phase-0 mechanic.
+Token never printed.
+
+### Base S1 protocol
+
+- **Live ID re-verification (Rule 5):** all 7 IDs hit live independently —
+  `erm2-nwe9`, `76ig-c548`, `wvxf-dwi5`, `tesw-yqqr`, `feu5-w2e2`, `64uk-42ks`,
+  `ygpa-z7cr` — live names all contain the expected keyword; `rowsUpdatedAt`
+  reproduced (erm2-nwe9 2026-07-16, 76ig 2025-12-24, wvxf 2026-07-15, tesw/feu5
+  2026-06-01, pluto 2026-05-28, ygpa 2026-07-15).
+- **311 union arithmetic + dedupe:** current 1,645,614 + archive 93,022 =
+  1,738,636; dedupe on `unique_key` = **0**; null-bbl 7,123 (0.4097%); deliverable
+  1,731,513 — and the on-disk deliverable is exactly 1,731,513. Range
+  2019-06-01 00:17:18 … 2026-07-13 23:43:26. All reproduced from the caches.
+- **Both seam diagnostics:** Seam A (2019-12-25..2020-01-07) reproduced daily,
+  identical to the recorded values; no gap/pileup. Seam B (refresh edge)
+  reproduced: late arrivals 0, disappeared 0, old-pull rows = new-pull rows
+  (1,645,614 = 1,645,614).
+- **Spine coverage vs WFF committed report:** import sha256
+  `1c9be931…74eb` matches; schema `[bbl_n, season, label_c, label_bc]` exact;
+  1,624,255 rows / 181,863 BBLs / seasons 2017–2025; per-season (rows, pos_c)
+  match WFF's `_s1b_frozen_labels.json` **9/9**, all recomputed.
+- **sha256s:** all three R4 imports match the bootstrap PROVENANCE entry.
+
+### Five disclosed ledger items — all cleared
+
+1. **Violations floor 2017-10-01.** Cache floor is exactly 2017-10-01
+   (max 2026-07-14); 149,585 rows, class B=2/C=149,583, other-class 0, null-bbl
+   209; **all 149,585 rows match the frozen text whitelist, 0 violating.**
+   Dual-floor comparison confirmed: phase-0 cache holds 128,121 rows at floor
+   2019-06-01. Justification sound — WFF family-1 `s2_features.py` consumes
+   whitelisted violation rows from 2017-10-01; the narrower phase-0 cache cannot
+   feed the WFF-recipe frame. Acquisition-only judgment, disclosed.
+2. **ygpa-z7cr 7-part date split.** Disjoint (cross-part duplicate `problem_id`
+   = **0**; every part's `received_date` verified inside its half-open bound);
+   exhaustive (part sum 1,754,951 = deliverable = **live server total**);
+   per-part counts = **live server-side year probes exactly** (re-probed now,
+   zero drift incl. the 2026 bucket); assembly deterministic (deliverable
+   rebuilds byte-identically from the parts); whitelist = all HEAT/HOT WATER.
+   Amendment-1 boundary documented in the script docstring + PROVENANCE; at S1
+   this is a raw cache only — no likelihood contact is structurally possible.
+3. **Two external kills.** No partial/corrupt artifacts: no `.tmp/.part/.lock`
+   files, all 22 raw parquets open and report row counts, 7 ygpa parts +
+   deliverable all intact. Pulls write parquet only on completion — consistent
+   with the clean disk state.
+4. **Unsandboxed `.env` mechanic (Rule 2).** Socrata token present (len 25);
+   its literal value appears in **no** repo file — code, logs, `s1_stats.json`,
+   PROVENANCE, agent logs — nor in any binary data file. Census key (len 40)
+   likewise absent. Script loads via `dotenv_values`, injects only as a header,
+   never prints. Token not printed anywhere in this audit.
+5. **Seam-B zero-accrual.** The current-side refresh contains **0** rows with
+   `created_date` after 2026-07-13; old/new counts identical every day
+   2026-06-30..07-13; late arrivals 0, disappeared 0. The diagnostic genuinely
+   supports "erm2's 07-15 update added no heat rows after 07-13" (July
+   off-season). Reported as-is, correctly.
+
+### Additional checks
+
+- **Storage vs 2 GB:** live total data/+imports/ = 341,566,718 B (341.6 MB) ≪
+  2 GB. The 4,065-B delta vs the recorded 341,562,653 is the disclosed benign
+  self-count artifact (`s1_stats.json`, 5,325 B, counting itself; guard measures
+  before the file is written). Not a defect.
+- **Idempotency:** both regenerated deliverables (`c311_heat_complaints`,
+  `hpd_complaints_heat`) rebuild **byte-identically** (sha256) from their source
+  caches by the script's own assembly semantics.
+- **Registrations distinct-BBL = frozen spine universe:** verified as **set
+  equality** — 181,863 = 181,863, 0 in reg∖spine, 0 in spine∖reg.
+- **Season 2026-27 sanctity (Rule 3, spec §4):** structurally clean — ygpa has
+  **0** rows with `received_date ≥ 2026-10-01`; every pull ends pre-season
+  (max created 2026-07-13, max received 2026-07-15, max inspection 2026-07-14);
+  no 2026-27 window in any filter. The bright line is intact.
+
+### Observational note (not a defect)
+- `a-data.md`'s ID table records `erm2-nwe9` rows-updated as 2026-07-15;
+  `s1_stats.json` and the live API show 2026-07-16 — a one-day tick of the
+  dataset's server-side metadata between log authoring and the stats write.
+  Zero effect on pulled data (max created 2026-07-13; seam-B zero accrual).
+
+**VERDICT: SIGN-OFF.** Every number re-derived and reconciled; live IDs and
+live ygpa year-probes re-verified; all five ledger items cleared; storage,
+idempotency, set-level spine/registration identity, credential hygiene, and
+2026-27 sanctity all pass. No fabrication, no silent edits, no Rule-9 condition.

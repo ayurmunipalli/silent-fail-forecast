@@ -216,4 +216,24 @@ beyond §3, any WFF re-analysis or retraining, any 2026-27 contact before G3.
 
 ## Amendments (appended, dated — never in-place edits)
 
-(none)
+**Amendment 1 — R-A resolved: ygpa-z7cr ADMITTED, non-load-bearing.**
+Dated 2026-07-16. Author of record: Ayur Munipalli.
+
+§0 R-A is ruled: **ADMIT**. The merged HPD Complaints-and-Problems dataset
+(`ygpa-z7cr`) is admitted to this project in exactly two capacities:
+
+(i) **Feature family 7** (§7): distinct-apartments-complaining signals,
+availability-masked, building-season grain, strictly pre-cutoff — the §1
+Oct-1 rule and §12 leakage review apply unchanged;
+
+(ii) **a screen sharpening the §10 criterion-3 HSP heuristic** (the
+zero-associated-311 upper-bound caveat on the 377; the exact criterion-3
+statistic remains frozen with the grid per §10).
+
+**Non-load-bearing boundary:** the 311 union (§2) remains the SOLE source of
+the reporting-head likelihood (§3). ygpa-z7cr never enters the loss — not as
+counts, not as exposure, not as a mask, not as a weight. The §3
+identification statement is unchanged.
+
+**Rationale on record:** OSC audit 2019-N-3 documents HPD's internal dedup
+errors; the dataset informs features, it does not carry identification.

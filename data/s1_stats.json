@@ -1,0 +1,236 @@
+{
+  "pull_date": "2026-07-16",
+  "dataset_ids": {
+    "erm2-nwe9": {
+      "name": "311 Service Requests from 2020 to Present",
+      "rows_updated": "2026-07-16",
+      "verified": "2026-07-16"
+    },
+    "76ig-c548": {
+      "name": "311 Service Requests from 2010 to 2019",
+      "rows_updated": "2025-12-24",
+      "verified": "2026-07-16"
+    },
+    "wvxf-dwi5": {
+      "name": "Housing Maintenance Code Violations",
+      "rows_updated": "2026-07-15",
+      "verified": "2026-07-16"
+    },
+    "tesw-yqqr": {
+      "name": "Multiple Dwelling Registrations",
+      "rows_updated": "2026-06-01",
+      "verified": "2026-07-16"
+    },
+    "feu5-w2e2": {
+      "name": "Registration Contacts",
+      "rows_updated": "2026-06-01",
+      "verified": "2026-07-16"
+    },
+    "64uk-42ks": {
+      "name": "Primary Land Use Tax Lot Output (PLUTO)",
+      "rows_updated": "2026-05-28",
+      "verified": "2026-07-16"
+    },
+    "ygpa-z7cr": {
+      "name": "Housing Maintenance Code Complaints and Problems",
+      "rows_updated": "2026-07-15",
+      "verified": "2026-07-16"
+    }
+  },
+  "c311_union": {
+    "current_rows": 1645614,
+    "archive_rows": 93022,
+    "pre_dedupe": 1738636,
+    "dedupe_removed": 0,
+    "union_rows": 1738636,
+    "null_bbl": 7123,
+    "null_bbl_pct": 0.4097,
+    "deliverable_rows": 1731513,
+    "min_created": "2019-06-01 00:17:18",
+    "max_created": "2026-07-13 23:43:26",
+    "seam_archive_daily": {
+      "2019-12-25": 664,
+      "2019-12-26": 678,
+      "2019-12-27": 457,
+      "2019-12-28": 437,
+      "2019-12-29": 515,
+      "2019-12-30": 850,
+      "2019-12-31": 608,
+      "2020-01-01": 692,
+      "2020-01-02": 673,
+      "2020-01-03": 533,
+      "2020-01-04": 554,
+      "2020-01-05": 746,
+      "2020-01-06": 804,
+      "2020-01-07": 831
+    },
+    "seam_refresh_daily": {
+      "2026-06-30": {
+        "old": 137,
+        "new": 137
+      },
+      "2026-07-01": {
+        "old": 140,
+        "new": 140
+      },
+      "2026-07-02": {
+        "old": 252,
+        "new": 252
+      },
+      "2026-07-03": {
+        "old": 203,
+        "new": 203
+      },
+      "2026-07-04": {
+        "old": 171,
+        "new": 171
+      },
+      "2026-07-05": {
+        "old": 170,
+        "new": 170
+      },
+      "2026-07-06": {
+        "old": 182,
+        "new": 182
+      },
+      "2026-07-07": {
+        "old": 206,
+        "new": 206
+      },
+      "2026-07-08": {
+        "old": 160,
+        "new": 160
+      },
+      "2026-07-09": {
+        "old": 150,
+        "new": 150
+      },
+      "2026-07-10": {
+        "old": 133,
+        "new": 133
+      },
+      "2026-07-11": {
+        "old": 86,
+        "new": 86
+      },
+      "2026-07-12": {
+        "old": 96,
+        "new": 96
+      },
+      "2026-07-13": {
+        "old": 116,
+        "new": 116
+      }
+    },
+    "refresh_late_arrivals": 0,
+    "refresh_disappeared": 0,
+    "phase0_pull_max_created": "2026-07-13 23:43:26"
+  },
+  "viol_wff_rows": 149585,
+  "viol_wff_class_B": 2,
+  "viol_wff_class_C": 149583,
+  "viol_wff_null_bbl": 209,
+  "viol_wff_min_insp": "2017-10-01 00:00:00",
+  "viol_wff_max_insp": "2026-07-14 00:00:00",
+  "ctx_groups": 2012740,
+  "ctx_classes": [
+    "A",
+    "B",
+    "C",
+    "I"
+  ],
+  "ctx_yr_min": 2014,
+  "ctx_yr_max": 2026,
+  "reg_rows": 203236,
+  "reg_distinct_bbl": 181863,
+  "contacts_rows": 782024,
+  "pluto_rows": 858602,
+  "hpdc_rows": 1754951,
+  "hpdc_null_bbl": 6792,
+  "hpdc_null_apartment": 3,
+  "hpdc_dup_flag_counts": {
+    "N": 993821,
+    "Y": 761130
+  },
+  "hpdc_min_received": "2019-06-01 00:11:35",
+  "hpdc_max_received": "2026-07-15 00:04:19",
+  "pluto_null": {
+    "yearbuilt": 358,
+    "numfloors": 42264,
+    "unitstotal": 429,
+    "bldgclass": 355,
+    "borough": 0
+  },
+  "spine": {
+    "sha256_ok": true,
+    "rows": 1624255,
+    "distinct_bbl": 181863,
+    "per_season": {
+      "2017-18": {
+        "rows": 178503,
+        "pos_c": 4725,
+        "expected_rows": 178503,
+        "expected_pos": 4725,
+        "match": true
+      },
+      "2018-19": {
+        "rows": 179143,
+        "pos_c": 4647,
+        "expected_rows": 179143,
+        "expected_pos": 4647,
+        "match": true
+      },
+      "2019-20": {
+        "rows": 179767,
+        "pos_c": 4013,
+        "expected_rows": 179767,
+        "expected_pos": 4013,
+        "match": true
+      },
+      "2020-21": {
+        "rows": 180157,
+        "pos_c": 4072,
+        "expected_rows": 180157,
+        "expected_pos": 4072,
+        "match": true
+      },
+      "2021-22": {
+        "rows": 180547,
+        "pos_c": 5057,
+        "expected_rows": 180547,
+        "expected_pos": 5057,
+        "match": true
+      },
+      "2022-23": {
+        "rows": 181087,
+        "pos_c": 6021,
+        "expected_rows": 181087,
+        "expected_pos": 6021,
+        "match": true
+      },
+      "2023-24": {
+        "rows": 181470,
+        "pos_c": 7764,
+        "expected_rows": 181470,
+        "expected_pos": 7764,
+        "match": true
+      },
+      "2024-25": {
+        "rows": 181718,
+        "pos_c": 7730,
+        "expected_rows": 181718,
+        "expected_pos": 7730,
+        "match": true
+      },
+      "2025-26": {
+        "rows": 181863,
+        "pos_c": 8897,
+        "expected_rows": 181863,
+        "expected_pos": 8897,
+        "match": true
+      }
+    }
+  },
+  "tabular_bytes": 341562653,
+  "tabular_mb": 341.6
+}

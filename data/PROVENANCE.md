@@ -225,3 +225,143 @@ $85,263 vs $79,943; median tract LEP 0.101 vs 0.105.
 
 **Anomalies:** none beyond the recorded harness mechanics. **Storage:** data/raw
 = 96.2 MB (Rule 6 fine). Stats: `data/p4_stats.json`.
+
+---
+
+## 2026-07-16 — S1 (build phase): all pulls, 311 union refresh, spine verification (A-DATA)
+
+**Stage script:** `src/s1_pull.py` (one idempotent script for the stage — paged,
+server-side filtered, parquet-cached, storage-guarded vs the ≤2 GB repo tabular
+total INCLUDING imports/, seed 42; token from `.env` via python-dotenv, never
+printed; run unsandboxed for the `.env` read, same harness mechanic recorded at
+phase-0 P4).
+
+**Dataset IDs verified live 2026-07-16** (data.cityofnewyork.us metadata API, Rule 5):
+
+| ID | Live name | Rows updated | Role |
+|---|---|---|---|
+| `erm2-nwe9` | 311 Service Requests from 2020 to Present | 2026-07-15 | 311 union, current side |
+| `76ig-c548` | 311 Service Requests from 2010 to 2019 | 2025-12-24 | 311 union, archive side (closed dataset) |
+| `wvxf-dwi5` | Housing Maintenance Code Violations | 2026-07-15 | WFF-recipe violations + family-2 aggregate |
+| `tesw-yqqr` | Multiple Dwelling Registrations | 2026-06-01 | family 5 + universe |
+| `feu5-w2e2` | Registration Contacts | 2026-06-01 | family 5 |
+| `64uk-42ks` | Primary Land Use Tax Lot Output (PLUTO) | 2026-05-28 | family 4 full attributes |
+| `ygpa-z7cr` | Housing Maintenance Code Complaints and Problems | 2026-07-15 | family 7 + §10 criterion-3 screen — verified ONLY after LEAD relayed R-A = ADMIT (spec Amendment 1, 2026-07-16); pull in the continuation entry below |
+
+**311 union refresh (phase0_probe.md Amendment-3 semantics re-run at 2026-07-16):**
+- Current side re-pulled to a NEW cache `data/raw/c311_current_refresh.parquet`
+  — 1,645,614 rows (phase-0 caches preserved untouched as comparison artifacts).
+  Archive side reused from the phase-0 cache (93,022 rows; dataset closed, live
+  metadata shows last row update 2025-12-24; ID re-verified live regardless).
+- **Union arithmetic:** 93,022 + 1,645,614 = 1,738,636; duplicates on
+  `unique_key`: **0** removed; union = **1,738,636 rows**, 2019-06-01 00:17:18
+  … 2026-07-13 23:43:26.
+- **Null-bbl accounting (§2 pattern):** 7,123 / 1,738,636 (0.410%) null/empty
+  bbl → excluded, logged. Deliverable `data/raw/c311_heat_complaints.parquet`
+  REGENERATED from the two caches: **1,731,513 rows**.
+- **Seam A (archive boundary, 2019-12-25..2020-01-07), reported not smoothed:**
+  664, 678, 457, 437, 515, 850, 608 | 692, 673, 533, 554, 746, 804, 831 —
+  identical to the phase-0 diagnostic; no gap, no pileup.
+- **Seam B (old/new refresh edge vs the untouched phase-0 erm2-nwe9 pull, daily
+  counts 2026-06-30..2026-07-13):** identical old-vs-new on every day; late
+  arrivals (new keys ≤ old max date) = **0**; disappeared (old keys not in new)
+  = **0**. The refreshed pull's row count equals the phase-0 pull exactly:
+  erm2-nwe9's 2026-07-15 update added no HEAT/HOT WATER rows after 2026-07-13
+  (July off-season). Reported as-is.
+
+**New pulls (all counts final; every pull non-empty; schema checked per page):**
+
+| Cache (`data/raw/`) | Source | Rows | Filter / select notes |
+|---|---|---|---|
+| `hpd_violations_wff.parquet` | `wvxf-dwi5` | 149,585 | frozen whitelist VERBATIM, class B+C superset (B=2, C=149,583), `inspectiondate >= 2017-10-01`, WFF s1_data_pull 13-column select; 209 null-bbl retained+logged; inspections 2017-10-01 … 2026-07-14. **DISCLOSED ADDITION** beyond the enumerated a-data.md pull list: WFF family 1 (`s2_features.py`) consumes whitelisted violation ROWS from 2017-10-01; the phase-0 cache (floor 2019-06-01, narrower columns, 128,121 rows) cannot feed the WFF-recipe frame. Cross-checks: WFF's own 2026-07-14 pull was 149,511 rows with class B=2 — +74 rows of two-day accrual, same B count. |
+| `hpd_viol_context_by_year.parquet` | `wvxf-dwi5` | 2,012,740 groups | WFF s1c VERBATIM: server-side aggregate (bbl, class, year), `inspectiondate >= 2014-06-01 AND bbl IS NOT NULL`; classes A/B/C/I present; years 2014–2026; `yr`,`n` stored Int64 per the WFF cache contract. Downstream leakage note stands: target-year bucket is never a feature (WFF s1c docstring; binding at S2). |
+| `hpd_registrations.parquet` | `tesw-yqqr` | 203,236 | no filter (universe); WFF column set; **181,863 distinct BBLs — exactly the frozen spine universe**. |
+| `hpd_registration_contacts.parquet` | `feu5-w2e2` | 782,024 | no filter; WFF column set (owner/portfolio linkage). Equals WFF's 2026-07-14 count. |
+| `pluto_full.parquet` | `64uk-42ks` | 858,602 | no filter; WFF 11-column attribute set (family 4: yearbuilt/numfloors/unitsres/unitstotal/bldgclass/landuse/borough/…). Nulls: yearbuilt 358, numfloors 42,264, unitstotal 429, bldgclass 355, borough 0. |
+
+**R4 spine verification (imports/building_season_labels.parquet, read-only):**
+- sha256 re-verified = `1c9be931…74eb` (matches the bootstrap PROVENANCE entry).
+- Schema exact (`bbl_n, season, label_c, label_bc`); grid **1,624,255 rows**,
+  **181,863 distinct BBLs**, seasons **2017-18 … 2025-26** — all as committed.
+- Per-season rows and label_c positives match WFF's committed
+  `outputs/checkpoints/_s1b_frozen_labels.json` EXACTLY, all 9 seasons:
+  178,503/4,725 · 179,143/4,647 · 179,767/4,013 · 180,157/4,072 ·
+  180,547/5,057 · 181,087/6,021 · 181,470/7,764 · 181,718/7,730 ·
+  181,863/8,897 (2017-18 → 2025-26).
+
+**Season 2026-27:** untouched (Rule 3). All pulls end at pull time (2026-07-16,
+pre-season); no 2026-27 window exists in any filter or artifact.
+
+**Storage after this entry's pulls:** data/ + imports/ = **208.4 MB** (≤ 2 GB, fine).
+Stats: `data/s1_stats.json`. **Anomalies:** none beyond the zero-growth
+refresh edge documented above (reported, benign).
+
+---
+
+## 2026-07-16 — S1 (continued): ygpa-z7cr pull per R-A = ADMIT (A-DATA)
+
+**Authorization:** model_spec.md Amendment 1 (2026-07-16, Ayur): ygpa-z7cr
+admitted in exactly two capacities — feature family 7 (distinct-apartments-
+complaining signals, masked) and the §10 criterion-3 HSP screen. NEVER the
+reporting-head likelihood (non-load-bearing boundary; binds all downstream
+consumers of this cache). ID verified live 2026-07-16 (table in the previous
+entry).
+
+**Whitelist:** `upper(major_category) = 'HEAT/HOT WATER'` +
+`received_date >= '2019-06-01'` (floor aligned with the §2 311-union floor;
+both admitted capacities are 2019-20+). Live category probe 2026-07-16 shows
+exactly one heat major; minor split ENTIRE BUILDING 1,148,242 / APARTMENT ONLY
+606,709. 21-column select: problem/complaint/unique identifiers, building keys
+(bbl, building_id, borough/block/lot), apartment identifiers (apartment,
+unit_type, space_type, type), categories, statuses, received/status
+timestamps, `problem_duplicate_flag`, `complaint_anonymous_flag`.
+
+**OPERATIONAL SPLIT (Rule-9-driven mechanic, NOT a data decision):** two
+successive background runs were killed EXTERNALLY mid-pull (~700k and ~900k of
+1,754,951 rows; each kill also took an unrelated trivial background task —
+session-level sweep, no data-layer failure; no partial file ever written,
+since pulls write parquet only on completion). Per LEAD's standing rule the
+branch STOPPED and escalated; **Ayur ruled (b): foreground, resumable
+date-split parts.** Executed as 7 half-open received_date intervals (disjoint,
+jointly exhaustive; sized so each bounded foreground call fits the 600 s
+ceiling at measured ~66k rows/min — the disclosed adjustment from "two halves",
+which would have exceeded the ceiling and reproduced the kill):
+
+| Part | Interval (received_date) | Rows | = server-side year probe |
+|---|---|---|---|
+| 1 | [2019-06-01, 2021-01-01) | 261,053 | 96,409 (2019) + 164,644 (2020) exact |
+| 2 | [2021-01-01, 2022-01-01) | 200,169 | exact |
+| 3 | [2022-01-01, 2023-01-01) | 270,629 | exact |
+| 4 | [2023-01-01, 2024-01-01) | 230,610 | exact |
+| 5 | [2024-01-01, 2025-01-01) | 267,542 | exact |
+| 6 | [2025-01-01, 2026-01-01) | 318,652 | exact |
+| 7 | [2026-01-01, —) | 206,296 | exact |
+
+**Assembly arithmetic:** 261,053 + 200,169 + 270,629 + 230,610 + 267,542 +
+318,652 + 206,296 = **1,754,951** = the pre-pull server-side total probed
+2026-07-16 (re-probed at ruling time: identical — zero server-side drift
+between probe and pull). Duplicate `problem_id` across parts: **0** (hard-stop
+guard; disjoint intervals). Deliverable `data/raw/hpd_complaints_heat.parquet`
+= deterministic sort (received_date, problem_id) over the 7 part caches,
+rebuilt on every run. Range present: 2019-06-01 00:11:35 … 2026-07-15 00:04:19.
+
+**Accounting (logged, nothing dropped from raw):** null/empty bbl 6,792
+(0.387%); null/empty apartment 3; `problem_duplicate_flag` Y = 761,130 (43.4%)
+vs N = 993,821 — HPD's own dedup marking is large, consistent with the OSC
+2019-N-3 concern the Amendment-1 rationale cites; flagged for A-FEAT/R-AUDIT
+(handling is an S2 analysis decision, not resolved here).
+
+**Idempotency (full-stage tail):** plain rerun cache-hits all 15 raw caches;
+both regenerated deliverables (`c311_heat_complaints.parquet`,
+`hpd_complaints_heat.parquet`) are **byte-identical** across rebuilds (sha256
+compared); `data/s1_stats.json` byte-identical across reruns. One measurement
+artifact recorded: the first rerun showed a 394-byte `tabular_bytes` delta
+because the storage guard counts `data/s1_stats.json` itself, whose size grew
+when the hpdc keys were first added — self-referential measurement, not data
+nondeterminism (proven by the byte-identical third run).
+
+**Storage:** data/ + imports/ = **341.6 MB** (≤ 2 GB, Rule 9 fine).
+**Season 2026-27:** untouched — the pull's natural max is 2026-07-15
+(pre-season; the 2026-27 season window has not begun).
+**Anomalies:** the two external kills (documented above and in
+`reports/agent_logs/a-data.md`); otherwise none.
