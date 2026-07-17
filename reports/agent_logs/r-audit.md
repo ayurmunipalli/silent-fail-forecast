@@ -806,3 +806,39 @@ S3a surface is untouched and the new keys are additive; the guard mis-estimate
 was self-caught and honestly corrected to the measured truth; tables are
 machine-generated and reconcile; winner and artifacts re-derive; no primary
 code; delta reading stays within §11. No fabrication, no Rule-9 condition.
+
+## 2026-07-17 — S3b blind loss re-derivation, STEP 1 (BLIND; pre-dispatch)
+
+Per the S3b protocol step 1, timed before A-MODEL's S3b code exists.
+**Structural blindness proof:** at this write there is no `src/s3b_primary.py`
+(nor any s3b file tracked in git) — my implementation provably predates the
+audited code. I have NOT read A-MODEL's S3b code, checkpoints, or log M6+.
+
+**Artifact:** `reports/agent_logs/r_audit_blind_loss.py`
+**sha256:** `52f678dac7ce1624e78788c01a6dbca8f63f901c40040f3cd41569676b5d37c8`
+Implemented from `model_spec.md` §3 + locked `hyperparam_grid.md` §3/§4 ALONE.
+Runs (synthetic self-test executes): BCE(Y,F·R) with R=1−(1−p)^min(u,u*);
+λ·binomial-NLL(counts | head p, building-season, complaint-positive rows);
+Ω₁=μ₁·mean[(logit p−logit p̄)²]; Ω₂=μ₂·mean[max(0,F(x)−F(x+δ))²]. All terms
+parameterized over the open axes so STEP 2 can identify which reading
+reproduces A-MODEL's persisted per-term values.
+
+**Spec-underdetermination flagged in the artifact (a checkability finding for
+Ayur at FREEZE regardless of agreement):**
+- **(A) central:** the auxiliary binomial's success parameter is not pinned —
+  θ=R (building detection via the u-link; my PRIMARY) vs θ=p (literal "under
+  head p"). On synthetic inputs the NLL term differs ~4× between the two, so
+  this is material, not cosmetic.
+- **(B)** successes/trials roles + k>n: complaint multiplicity (the very signal
+  identification-(i) invokes) routinely gives distinct-complaints > confirmed
+  incidents, for which Binomial(n,·) is undefined; a plain binomial isn't
+  reconstructible from the text (clip vs raw-k exposed).
+- **(C)** binomial coefficient (constant in θ but not in the reported scalar),
+  **(D)** mean vs sum reductions per term, **(E)** log/logit clamp ε — all
+  exposed and defaulted, none spec-pinned.
+- **(F)** p̄, u, and the Ω₂ subsample selection are not spec formulas — taken as
+  inputs from A-MODEL's batch (their definitions being outside the spec is
+  itself noted).
+
+STEP 2 (reproduction on A-MODEL's fixed batch) and STEP 3 (code audit) await
+LEAD's dispatch. Idle until then.
