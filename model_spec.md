@@ -260,3 +260,29 @@ are now the pre-registration.
 **Pre-registered addition:** the G3 packet must report the realized n for
 criterion 3 (the count of silent-screened HSP buildings entering the sign
 test) alongside the test result.
+
+**Amendment 3 — G2 adjudication: G2 APPROVED; baseline B5 added (§5) for attribution.**
+Ruled 2026-07-16, appended 2026-07-17. Author of record: Ayur Munipalli.
+
+**G2 is adjudicated APPROVED** (Amendment-2 components: S2 leakage sign-off,
+baselines B0–B4 committed, grid locked). S3b is authorized subject to the
+addition below being executed first.
+
+**§5 gains baseline B5 — uncorrected retrained LightGBM:**
+
+- Identical 49-feature frame (`features_main.parquet`) and identical
+forward-chaining folds (v ∈ 2021-22…2025-26) as B4.
+- Plain BCE objective on Y_obs: NO propensity stage, NO inverse-propensity
+weighting — the uncorrected twin of B4's risk stage.
+- Grid = B4's stage-2 grid VERBATIM (n=60 sampled, seed 42); same
+pre-registered selection rule (mean validation AP vs Y_obs; tie-break
+zero-311-stratum p@250 of the deployment ranking).
+- B5 is committed and audited under the S3a protocol BEFORE any primary
+(S3b) code exists — the baselines-before-primary property is preserved.
+
+**Rationale on record:** B3 is frozen on ≤2023 data, so B4-vs-B3 confounds
+the censoring correction with training recency; B5 isolates the correction
+effect (B5 vs B4, like-for-like frame, folds, grid, and selection).
+
+**§10 criteria UNCHANGED:** still measured against B3 — the deployed
+incumbent is the deployment comparison. B5 is for attribution, not pass/fail.
