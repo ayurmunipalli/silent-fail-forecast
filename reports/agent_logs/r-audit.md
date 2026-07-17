@@ -1130,3 +1130,64 @@ introduced no code, model, or kit change (all byte-verified); everything verifie
 clean at the step-3 first pass stands. The step-2 auxiliary-NLL truncation
 (zero-truncated binomial, normalizer R) carries forward as a written FREEZE-packet
 finding for Ayur's adjudication — not a defect. S3b clears.
+
+## 2026-07-17 — FREEZE gate-packet audit: outputs/checkpoints/freeze_packet.md — **SIGN-OFF**
+
+Gate-packet protocol (numbers/shas traced to signed-off sources; no
+recommendation language; nothing pre-resolved that is Ayur's). Cross-checked vs
+s3b_primary.md, s3b_stats.json, s3a_stats.json, my own r-audit.md S3b sections,
+PROVENANCE, ledger B77–B86, git.
+
+- **(1) Freeze identity/shas trace.** cfg 2009 (w256/d2/do.15/λ.3/u*25/lr1e-3/
+  μ₁0/μ₂1.0), 93,186 params, E*=10, seed 42; bundle sha `bb4016b8…`, config
+  `90435616…`, recipe hashes `477d3079…`/`09f8e94d…` — all match my step-3
+  re-verification. Reload claim faithful: A-MODEL float32 bit-exact 0.0 AND my
+  independent numpy forward "≤2.2e-16" (my max was dp 2.22e-16) — both stated and
+  distinguished correctly. Commit **054f136** exists, contains the 4 S3b files,
+  and is on **origin/main** (pushed); "~2.5 months before Oct 1" correct for
+  2026-07-17.
+- **(2) Selection provenance.** n=60/2,592 seed-42; winner AP .3631432; runner-up
+  1961 Δ 1.416e-5, tie-break correctly not invoked — all match my step-3
+  re-derivation. No recommendation.
+- **(3) Validation table vs signed-off records.** B4 .3865/.8096/.1104, B5
+  .3870/.8136/.1136, S3b .3631/.7488/.0912 all reconcile with s3a_stats.json
+  (`b5_summary_means` .387/.8136/.1136) and s3b_stats.json. B3 .3823/.830/.118
+  rounds from source .3823/.8304/.1184; in-sample caveat carried (row label +
+  "observed-label; spec §11 caveat applies"). §10.4 "two-stage ships if joint
+  doesn't beat B4 at G3" is a faithful restatement of spec, not a recommendation.
+  Spread .3512–.3653 / std .0056 matches. Weak-fold 2021-22 attribution correct.
+- **(4) Blind-protocol summary accurate.** Step 1 1d2f3b4 / `52f678da…` pre-dates
+  S3b code ✓. Step 2 "spec-pinned terms ≤1.8e-15" — accurate (my loosest was
+  nll_no_trunc 1.8e-15; the rest tighter). "One divergence where §3 is silent" ✓.
+  Step 3 "SIGN-OFF after 1 reject cycle (doc-only; no code/model change)" ✓.
+- **(5) Adjudication items A–D, no recommendation / nothing pre-resolved.**
+  A (truncation): states the zero-truncated reading, disclosure, my blind 3.5e-18
+  match, and the A–F underdetermination lineage with the **B72 correction of
+  B66's A–E** stated correctly; asks Ayur to rule whether it is the frozen §3
+  interpretation (dated amendment per Rule 8 if so) — leaves the ruling open,
+  does not declare it accepted. B (hand-reconciled stats structure): surfaced as
+  the accepted-consequence class exactly as I logged it — a LEAD-lane operational
+  call on an uncommitted file, presented for awareness, not forcing a ruling.
+  C (reject cycle): 233-vs-234 append-only drift, doc-only four-surface fix,
+  deterministic facts 15/2025/0 unaffected — matches my re-audit exactly.
+  D (session-loss lineage): quarantine + regeneration + structural blindness/
+  sequencing survival — matches B67–B70 and my step-3(b). None of A–D resolves a
+  scientific/gate question reserved to Ayur.
+- **No recommendation language:** header "no recommendation is made"; §6 states
+  on-approval mechanics conditionally ("On approval"), no GO/approve nudge.
+
+**Non-blocking cosmetic observation (NOT a defect):** the §3 table shows the B3
+row at 3 dp (.830 / .118, carried at G2-packet precision) while B4/B5/S3b are at
+4 dp (.8096 / .1104 …). No value is misstated (B3 source .8304/.1184 rounds
+correctly and appears at full precision in s3b_primary.md / G2 packet), and the
+direction is not obscured — B3 remains the strongest observed-label baseline
+either way. Suggest uniform precision if edited; does not affect the packet or
+the gate.
+
+**FREEZE PACKET VERDICT: SIGN-OFF.** Every number and sha fragment traces to a
+signed-off/committed source; the baseline+S3b table matches records with the B3
+in-sample caveat carried; the blind-protocol summary states steps 1–3 accurately
+incl. the step-2 divergence and the A–F/B72 axes lineage; adjudication items A–D
+carry no recommendation language and pre-resolve nothing reserved to Ayur; the
+reject cycle is disclosed accurately. Clear to reach Ayur; adjudication is
+Ayur's alone.
