@@ -138,3 +138,74 @@ LightGBM 4.6.0 (recorded; installed this stage with scikit-learn 1.9.0).
 
 **Storage:** repo tabular+outputs ≈ 418 MB ≤ 2 GB. **Season 2026-27:**
 untouched, asserted 50×. **No Rule-9 conditions.** → R-AUDIT S3a.
+
+---
+
+# B5 appendix — uncorrected retrained LightGBM (Amendment 3)
+
+**Added 2026-07-17 under the S3a protocol (Amendment 3, commit aa27494); G2
+approved; S3b still barred until this section is committed and audited.**
+Script: `src/s3a_b5.py` (separate file — the signed-off `s3a_baselines.py` is
+not modified; B5 imports its audited functions: frame loader, guards, metrics,
+grid machinery, fold protocol). Same operational discipline: bounded runs,
+per-unit checkpoints in `s3a_work/b5_risk/`, resumable, seed 42.
+
+## Clip-floor handling (stated BEFORE training, per LEAD's dispatch)
+
+Amendment 3 sets B5's grid = B4's stage-2 grid VERBATIM (n=60, sampling seed
+42). The clip-floor dimension exists only through IPW, which B5 omits. Ruling
+adopted here: the **sample is inseparable** — B5 trains THE SAME 60 configs the
+seed-42 draw produced for B4 stage 2 (indices identical), with `clip_floor`
+carried as **inert metadata** (it touches no weight, no parameter, no code path
+in B5). Verified before training: projecting the 60 configs onto the remaining
+9 dimensions yields **60 distinct configs, zero collisions** — no dedup needed,
+and every B5 config is the exact uncorrected twin of its B4 stage-2 counterpart
+(same index, same 9 operative values), which is precisely the like-for-like
+attribution Amendment 3 asks for. `scale_pos_weight` remains operative (it is
+an objective-level knob, not an IPW artifact). Flagged to LEAD before training.
+
+## B5 protocol and results (machine-generated table below)
+
+Identical folds, frame, ES/selection rule, and per-unit resume discipline as
+B4 stage 2; plain binary objective on `label_c`, no weights of any kind. All
+300 (config, fold) units completed and checkpointed; idempotent rerun clean
+(B5 COMPLETE, zero recomputation). Guards recorded to the same guards.jsonl.
+Numbers below are copied verbatim from `s3a_work/b5_table.md`, which
+`src/s3a_b5.py stage_report()` generates from the fold jsons (no hand
+transcription; s3a_stats.json carries the same values under `b5_*` keys,
+added additively — no S3a-audited key altered).
+
+| Model | mean AP | mean p@250 | mean zero-311 p@250 | mean any-311 p@250 |
+|---|---|---|---|---|
+| B4 two-stage GBM (corrected) | 0.3865 | 0.8096 | 0.1104 | 0.8096 |
+| B5 uncorrected twin | 0.3870 | 0.8136 | 0.1136 | 0.8136 |
+| Δ (B5 − B4) | +0.0006 | +0.0040 | +0.0032 | +0.0040 |
+
+Per-fold B5 p@250 (v = 2021…2025): 0.6800 / 0.7800 / 0.8520 / 0.8920 / 0.8640.
+Per-fold B5 AP: 0.2826 / 0.3376 / 0.4203 / 0.4395 / 0.4551.
+Per-fold B5 zero-311 p@250: 0.1040 / 0.0880 / 0.1120 / 0.1000 / 0.1640.
+
+**Winner (cfg 20928, the same index in B4's stage-2 sample):** num_leaves 63
+(interior), max_depth −1 (low-edge), lr 0.02 (low-edge), n_estimators ceiling
+800 (interior; ES actual 236–578), min_child_samples 100 (high-edge),
+subsample 0.7 (low-edge), colsample 0.8 (interior), reg_lambda 0.0 (low-edge),
+scale_pos_weight sqrt (interior); clip_floor 0.02 carried as inert metadata.
+Mean AP 0.38702, runner-up 0.38679. Note the operative winner DIFFERS from
+B4 stage 2's (cfg 21485): removing IPW moved the optimum.
+
+**Attribution reading (descriptive, per Amendment 3's purpose):** B5 − B4
+deltas are ≈ 0 to slightly positive on every observed-label mean (+0.0006 AP,
++0.0040 p@250, +0.0032 zero-311 p@250). Like-for-like, the IPW censoring
+correction does not improve — and marginally trails — observed-label
+validation metrics. This is the spec-§11 named limitation operating as
+predicted (observed-label evaluation penalizes correction by construction:
+the corrected model deliberately re-ranks toward failures the observed label
+under-counts), not evidence the correction is worthless — that adjudication
+is exactly what the §10 criteria and the HSP external check exist for, at G3,
+against B3. Recorded as-is; no claim either direction.
+
+**Frozen B5 artifact:** `outputs/models/b5_lgbm.txt` (405 trees, refit all dev
+seasons, fixed n_estimators = round(mean fold best_iter), no ES) +
+`b5_frozen_config.json`. Storage after B5: repo ≈ 422 MB ≤ 2 GB. Season
+2026-27 untouched (guards: every fold/refit asserted; cumulative log in
+guards.jsonl). No S3b/primary code exists. No Rule-9 conditions. → R-AUDIT.

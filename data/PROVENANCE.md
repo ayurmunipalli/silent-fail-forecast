@@ -450,3 +450,45 @@ stage-1 propensity target prevalence ≈ 0.88 (multiplicity near-universal given
 detection); B4 IPW clip floor never binds (min R̂ = 0.2366 > 0.10).
 
 **Storage after stage:** data/ + imports/ + outputs/ ≈ 418 MB (≤ 2 GB, fine).
+
+---
+
+## 2026-07-17 — S3a appendix: baseline B5 per spec Amendment 3 (A-MODEL)
+
+**Authorization:** model_spec.md Amendment 3 (ruled 2026-07-16, appended
+2026-07-17, Ayur; commit aa27494): §5 gains B5 = uncorrected retrained
+LightGBM for attribution (B5 vs B4 isolates the censoring correction from
+training recency); executed under the S3a protocol BEFORE any S3b code.
+
+**Stage script:** `src/s3a_b5.py` — separate file; the signed-off
+`src/s3a_baselines.py` is imported, never modified. Idempotent + resumable
+(300 per-unit checkpoints in `outputs/checkpoints/s3a_work/b5_risk/`); ran as
+5 bounded foreground invocations + idempotency rerun. Seed 42, no network.
+
+**Grid-sample identity:** THE B4 stage-2 seed-42 sample verbatim (same 60
+config indices); clip_floor inert metadata (no IPW in B5) — handling stated in
+the checkpoint BEFORE training and flagged to LEAD; zero collisions verified
+when projected to the 9 operative dims (asserted in code).
+
+**Inputs:** `features_main.parquet` (read-only, S2-audited), 311 union
+deliverable (zero-311 stratum flags via the cached S3a first311 table).
+
+**Artifacts:** B5 appendix in `outputs/checkpoints/s3a_baselines.md` (results
+table machine-generated to `s3a_work/b5_table.md` and appended verbatim —
+zero hand transcription); additive `b5_*` keys in
+`outputs/checkpoints/s3a_stats.json` (no S3a-audited key altered);
+`outputs/models/b5_lgbm.txt` (405 trees) + `b5_frozen_config.json`;
+`s3a_work/b5_winner.json`.
+
+**Headline (5-fold means):** B5 AP 0.3870 / p@250 0.8136 / zero-311 p@250
+0.1136; B5−B4 deltas +0.0006 / +0.0040 / +0.0032 — the spec-§11 named
+limitation (observed-label evaluation penalizes correction) operating as
+predicted; recorded as-is.
+
+**Test-season sanctity:** every B5 fold/refit guard-asserted; cumulative
+guards.jsonl now 72 recorded passes across 42 distinct sites (idempotency
+reruns re-assert and re-record), max season ever touched 2025. (Count
+measured from guards.jsonl after the final rerun; an earlier draft of this
+entry hand-estimated 62 — corrected before commit.)
+
+**Anomalies:** none. **Storage:** repo tabular+outputs ≈ 422 MB (≤ 2 GB).

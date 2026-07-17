@@ -749,3 +749,60 @@ during G2 review. Does not affect the packet or the gate decision.
 verbatim copy; every §2 number traces; §3 grid-lock matches Amendment 2; no
 recommendation language; all three components present; the reject cycle is
 represented accurately. Clear to reach Ayur; adjudication is Ayur's alone.
+
+## 2026-07-17 — B5 audit (A-MODEL): uncorrected retrained LightGBM (Amendment 3) — **SIGN-OFF**
+
+**Materials:** `src/s3a_b5.py`, B5 appendix in `s3a_baselines.md`, additive
+`b5_*` keys in `s3a_stats.json`, `b5_lgbm.txt` + `b5_frozen_config.json`,
+`s3a_work/b5_risk/` (300 units) + `b5_winner.json` + `b5_table.md`, PROVENANCE
+B5, a-model.md M5. Audited under the S3a protocol. Every number re-derived.
+
+- **(1) Amendment-3 conformance (code path, not the claim):** `stage_b5` calls
+  `lgb.train` on a plain `lgb.Dataset` with **no `set_weight`, no R̂, no IPW**;
+  fold records carry no weight key. Objective is binary on `label_c`.
+  `scale_pos_weight` is retained as an objective-level grid dim (part of B4's
+  stage-2 grid), NOT propensity weighting — consistent with Amendment 3. Same
+  frame (`features_main`), same folds (v∈2021–2025), same selection (mean AP /
+  tie-break zero-311 p@250).
+- **(2) Twin-by-index:** `b5_configs()` = `sampled_configs(RISK_DIMS)` — the B4
+  stage-2 seed-42 draw, indices identical; I reproduced it: 60 configs, **cfg
+  20928 present, zero operative-dim (9-dim) collisions**. clip_floor carried as
+  inert metadata only (no code path). The pre-training statement exists in the
+  checkpoint ("Clip-floor handling (stated BEFORE training)"). Matches ledger
+  B59 approval.
+- **(3) S3a surface integrity:** `s3a_baselines.py` **untouched** (no diff vs
+  07df605); `s3a_stats.json` adds only `b5_*` keys — **no pre-existing key
+  changed** (verified by key-level json diff); `guards.jsonl` is **append-only**
+  (first 50 lines byte-identical to the committed version).
+- **(4) Self-caught guard correction:** I counted `guards.jsonl` directly = **72
+  passes / 42 distinct sites**, max season 2025, **0 firings ≥2026** —
+  `b5_guard_assertions` states 72/42 (measured truth). The 62→72/42 correction
+  is honestly recorded in PROVENANCE and M5 ("first draft hand-estimated 62,
+  caught and corrected pre-commit — same lesson as the M3 transcription
+  defect"); the count is an append-only cumulative (incl. idempotency reruns),
+  disclosed via a `snapshot_note`.
+- **(5) Machine-generated table:** `b5_table.md` appears **verbatim** inside the
+  checkpoint appendix, and its values equal `s3a_stats.json` `b5_*` on every
+  column (AP/p@250/zero-311/any-311 and all three per-fold lines). No hand
+  transcription — the S3a transcription failure mode is structurally avoided.
+- **(6) Winner re-derived from the 300 checkpoints:** cfg **20928**, mean AP
+  **0.387016**, runner-up cfg 13411 AP 0.386791 (gap 0.00023) — matches
+  `b5_winner.json` and the appendix. `frozen_n_estimators` = round(mean best_iter
+  405.4) = 405; `b5_lgbm.txt` = **405 trees**; ES max 578 < the 800 ceiling
+  (stopped short, ceiling non-binding). Boundary statuses as reported.
+- **(7) Sequencing:** src/ = p1–p4, s1, s2, s3a_baselines, s3a_b5 — **no
+  S3b/primary code exists**. Baselines-before-primary preserved.
+- **(8) Delta reading within §11:** the B5−B4 deltas (+0.0006 AP / +0.0040
+  p@250 / +0.0032 zero-311 / +0.0040 any-311, all re-derived to match)
+  are read in the appendix and M5 as the spec-§11 named limitation
+  (observed-label evaluation penalizes correction) "operating as predicted …
+  no claim either direction (G3/§10 adjudicates against B3)." Stays
+  validation-descriptive; no directional claim. Metric discipline intact
+  (`average_precision_score` via the audited helpers; no trapezoidal).
+
+**B5 VERDICT: SIGN-OFF.** Amendment-3-conformant (plain BCE, no IPW in the code
+path); twin-by-index construction exact with zero collisions; the signed-off
+S3a surface is untouched and the new keys are additive; the guard mis-estimate
+was self-caught and honestly corrected to the measured truth; tables are
+machine-generated and reconcile; winner and artifacts re-derive; no primary
+code; delta reading stays within §11. No fabrication, no Rule-9 condition.

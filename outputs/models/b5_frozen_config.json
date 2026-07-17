@@ -1,0 +1,38 @@
+{
+  "library": "lightgbm",
+  "version": "4.6.0",
+  "seed": 42,
+  "baseline": "B5 uncorrected retrained LightGBM (spec Amendment 3)",
+  "config": {
+    "clip_floor": 0.02,
+    "scale_pos_weight": "sqrt",
+    "reg_lambda": 0.0,
+    "colsample_bytree": 0.8,
+    "subsample": 0.7,
+    "min_child_samples": 100,
+    "n_estimators": 800,
+    "learning_rate": 0.02,
+    "max_depth": -1,
+    "num_leaves": 63
+  },
+  "clip_floor_inert_metadata": true,
+  "frozen_n_estimators": 405,
+  "train": "all dev rows, plain binary objective on label_c \u2014 no propensity stage, no IPW, no sample weights",
+  "protocol": "identical folds/frame/grid-sample/selection as B4 stage 2 (hyperparam_grid.md \u00a75-\u00a76; ES-50 watching v); refit all-dev with fixed n_estimators",
+  "dev_seasons": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "val_seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ]
+}

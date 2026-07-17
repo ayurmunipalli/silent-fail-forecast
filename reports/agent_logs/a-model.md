@@ -92,3 +92,33 @@ LEAD; idle pending R-AUDIT S3a / G2.
 **M3 | 2026-07-16 | S3a REJECT cycle 1 resolved:** corrected the 5 hand-transcribed "mean any-311 p@250" cells in s3a_baselines.md to the s3a_stats.json values (B0 .6392, B1 .5744, B2 .6768, B3 .8304, B4 .8096; re-verified against stats.json before editing) and tightened the IPW-weight range to ~1.0–4.0 (max applied weight over positives 3.97). Documentation-only; no code change, no re-run, nothing else touched.
 
 **M4 | 2026-07-16 | Clerical:** hyperparam_grid.md status header updated from stale "PROPOSED / not locked until G1" to "APPROVED at G1 by Ayur (2026-07-16), ratified as pre-registration by Amendment 2 (commit 9eafc29); LOCKS at G2." Header line only; no other content changed.
+
+---
+
+**M5 | 2026-07-17 | S3a appendix: baseline B5 (Amendment 3) complete.**
+
+Dispatch after G2 approval; S3b remains barred and NO S3b/primary code exists.
+Pre-training obligations met first: clip-floor handling stated in the
+checkpoint BEFORE any training and flagged to LEAD (sample judged inseparable
+— B4 stage-2's exact 60 seed-42 configs, clip_floor inert metadata; zero
+projection collisions verified, so every B5 config is its B4 twin).
+
+Execution: src/s3a_b5.py (separate file, imports the signed-off
+s3a_baselines.py unmodified — disclosed choice), 5 bounded invocations +
+idempotent rerun, 300 units checkpointed. Results table machine-generated
+(s3a_work/b5_table.md) and appended verbatim — no hand transcription this
+time; s3a_stats.json extended with additive b5_* keys only.
+
+Results (5-fold means): AP 0.3870 / p@250 0.8136 / zero-311 p@250 0.1136 /
+any-311 0.8136. B5−B4: +0.0006 / +0.0040 / +0.0032 / +0.0040 — uncorrected
+twin marginally edges the corrected model on every observed-label mean; the
+spec-§11 penalizes-correction-by-construction limitation operating as
+predicted; recorded as-is, no claim either direction (G3/§10 adjudicates).
+Winner cfg 20928 (differs from B4's 21485): num_leaves 63(int), max_depth
+−1(low), lr 0.02(low), ceiling 800(int, ES 236–578), min_child 100(high),
+subsample 0.7(low), colsample 0.8(int), reg_lambda 0(low), spw sqrt(int).
+Artifact b5_lgbm.txt 405 trees + b5_frozen_config.json. Guards cumulative 72
+passes / 42 sites (measured from guards.jsonl post-rerun; first draft
+hand-estimated 62, caught and corrected pre-commit — same lesson as the M3
+transcription defect), max season 2025. Storage ≈422 MB. No Rule-9 conditions. Reported to
+LEAD; idle pending R-AUDIT.
