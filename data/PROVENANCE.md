@@ -492,3 +492,50 @@ measured from guards.jsonl after the final rerun; an earlier draft of this
 entry hand-estimated 62 — corrected before commit.)
 
 **Anomalies:** none. **Storage:** repo tabular+outputs ≈ 422 MB (≤ 2 GB).
+
+## 2026-07-17 — S3b: primary two-head net per spec §3 (A-MODEL)
+
+**Authorization:** G2 approved + Amendment 3 precondition met (B5 committed,
+commit 4959795); S3b fence opened by LEAD dispatch (ledger B64 terms;
+regeneration after the B68 removal of a killed session's unhashed partials —
+nothing from that session referenced or reused).
+
+**Stage script:** `src/s3b_primary.py` — one idempotent script, resumable at
+epoch granularity (per-unit checkpoints + per-epoch resume states); ~29
+bounded foreground invocations, 3 workers, torch fixed at 3 threads
+(determinism); pre-flight kill/resume test bit-identical (scratch, deleted).
+Seed 42; seeds 43–46 only in the validation spread. No network.
+
+**Inputs (hash-asserted at prep against this file's S2 entries — matched):**
+`features_main.parquet` 477d3079…, `features_b3.parquet` 09f8e94d…;
+`c311_heat_complaints.parquet` (311 union — SOLE loss complaint source,
+Amendment-1 boundary; NLL counts + zero-311 stratum flags).
+
+**Search:** locked grid only (n=60 of 2,592, sampling seed 42, S3a decode
+machinery). Winner cfg 2009 (w256/d2/do.15/λ.3/u*25/lr1e-3/μ₁0/μ₂1);
+mean val AP(F·R) 0.3631 — trails B4 (.3865)/B5 (.3870) on observed-label
+validation means; recorded as-is, G3 adjudicates (§10.4). Near-tie runner-up
+disclosed in the checkpoint.
+
+**Artifacts:** `outputs/models/s3b_primary_seed42.pt` (93,186 params; sha256
+bb4016b836d148766f95d17e45bbb127b874e22f3e5d33b43e39a9c8b5c27126) +
+`s3b_frozen_config.json` (sha256 904356165858091f3d05c57fb2b0593c0efe9ff0…
+b2070412ded23300b0e5b2e0) with both frames' recipe hashes; E*=10 all-dev
+refit; reload verification in a FRESH subprocess: BIT-EXACT (0.0 max abs
+diff, full-dev F/p + every fixed-batch term). Checkpoint
+`outputs/checkpoints/s3b_primary.md`; stats `s3b_stats.json`; blind-audit
+kit `s3b_work/fixed_batch/` (8,125-row deterministic batch, per-term float64
+values at t0/t1/tE with decomposed NLL, per-row F/p/R/q/F_pert, all
+constants); resolved spec-§3 axes A1–A10 disclosed in script header +
+checkpoint.
+
+**Test-season sanctity:** 2026-27 structurally absent; deterministic guard
+facts: 15 distinct sites, max season ever touched 2025, zero >=2026 firings
+ever (a guard failure is a hard stop, not a log line). The raw pass count in
+`s3b_work/guards.jsonl` (234 at reconciliation, 2026-07-17) is an APPEND-ONLY
+CUMULATIVE snapshot that drifts upward on every invocation incl. complete
+idempotent reruns (fixed-batch capture path re-asserts; B5-lineage caveat).
+[Relabeled after R-AUDIT S3b reject 1, LEAD-authorized doc-only correction
+before commit; an earlier draft headlined the snapshot value 233.] **Storage:** ≈928 MB ≤ 2 GB (design.npy 483 MB is a
+regenerable cache, deletable at freeze). **Anomalies:** none; no Rule-9
+conditions.

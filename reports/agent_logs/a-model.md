@@ -122,3 +122,60 @@ passes / 42 sites (measured from guards.jsonl post-rerun; first draft
 hand-estimated 62, caught and corrected pre-commit — same lesson as the M3
 transcription defect), max season 2025. Storage ≈422 MB. No Rule-9 conditions. Reported to
 LEAD; idle pending R-AUDIT.
+
+---
+
+**M6 | 2026-07-17 | Stage S3b: primary two-head net complete.**
+
+Dispatch: plan §3 step 8 after G2 + Amendment-3 B5 precondition (HEAD 1d2f3b4).
+RESUME-AFTER-SESSION-LOSS context honored: regenerated from scratch per ledger
+B68; the killed session's work was never sought, referenced, or reused; frame
+hashes re-asserted in code against PROVENANCE (matched).
+
+Read before acting: a-model.md (binding), CLAUDE.md, model_spec.md (frozen +
+Amendments 1–3), plan.md, my prior log M1–M5, locked hyperparam_grid.md, S2
+feature inventory, audited s3a_baselines.py (machinery precedent).
+
+Execution: src/s3b_primary.py — spec-§3 architecture exactly, locked grid only
+(n=60/2,592, sampling seed 42, S3a decode machinery). Open spec-§3 axes
+resolved independently and disclosed (A1–A10 in script header + checkpoint):
+headline = zero-truncated binomial NLL on label_c=1 ∧ k≥1 rows (42,787),
+exposure min(u,u*) shared with the R link, k capped at u (counts reported);
+u fallback unitstotal→unitsres→3; Ω₂ column = viol_cnt_prior_cum only, eval-
+mode penalty forwards; D=100 design (frozen vocabularies, nan-aware fold
+scalers, no imputation beyond post-standardization 0 + indicators).
+Pre-flight on scratch dir: double kill/resume BIT-IDENTICAL; Ω₂ nonzero at
+init. ~29 bounded invocations, 3 workers/3 torch threads, 321 units, zero
+losses; idempotent rerun clean.
+
+Results: winner cfg 2009 (w256/d2/do.15/λ.3/u*25/lr1e-3/μ₁0/μ₂1.0), mean val
+AP(F·R) 0.3631 / p@250(F) 0.7488 / zero-311 p@250(F) 0.0912 — TRAILS B4
+(.3865/.8096/.1104) and B5 on every observed-label validation mean; recorded
+verbatim with the §11 penalizes-correction caveat noted both ways; G3
+adjudicates §10.4. Near-tie runner-up (Δ AP 1.4e-5, better tie-break metric)
+disclosed; frozen rule applied mechanically. 5-seed spread (42–46, val-based):
+AP range .3512–.3653, std .0056. Freeze candidate: s3b_primary_seed42.pt
+(93,186 params, E*=10 all-dev refit) + frozen config with both frames' recipe
+hashes; fresh-subprocess reload BIT-EXACT (0.0 everywhere). Blind-audit kit:
+deterministic 8,125-row fixed batch, per-term float64 at t0/t1/tE, NLL
+decomposed into 4 pieces, per-row F/p/R/q/F_pert, all constants; no clamp
+binds on the batch. Guards: 15 distinct sites / max season 2025 / zero ≥2026
+firings (raw pass count is an append-only cumulative snapshot — see M7).
+Storage ≈928 MB. No Rule-9 conditions. Reported to LEAD; idle pending R-AUDIT
+S3b blind re-derivation.
+
+**M7 | 2026-07-17 | S3b REJECT cycle 1 resolved (doc-only, as authorized):**
+R-AUDIT found the headlined guard pass count 233 non-reconciling with
+guards.jsonl (234): fold_tensors(FOLD_ALL) in the fixed-batch capture path
+appends a guard line on EVERY invocation including complete idempotent
+reruns, so the post-completion verification rerun advanced the count after
+stats were written — the raw count is an append-only cumulative, and the B5
+62→72 lesson (M5) was not carried into S3b's claims. Fix per LEAD's
+authorization: s3b_stats.json guard_assertions restructured to headline the
+deterministic facts (15 distinct sites, max season 2025, zero ≥2026 firings)
+with the raw count relabeled an append-only cumulative snapshot (234 at
+reconciliation) and the drift mechanism stated; matching corrections in
+s3b_primary.md and the M6 line above. Deterministic facts re-verified from
+guards.jsonl in the reconciliation script (sites and max-season asserted
+equal). NO code change (R-AUDIT's guard-idempotency hygiene declined by LEAD
+— audited surface unchanged), no re-run, no retraining, nothing else touched.

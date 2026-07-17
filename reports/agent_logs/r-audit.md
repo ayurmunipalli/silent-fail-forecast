@@ -842,3 +842,291 @@ Ayur at FREEZE regardless of agreement):**
 
 STEP 2 (reproduction on A-MODEL's fixed batch) and STEP 3 (code audit) await
 LEAD's dispatch. Idle until then.
+
+## 2026-07-17 — Session resume after external kill — READY, IDLE
+
+Re-read `.claude/agents/r-audit.md`, `CLAUDE.md`, `model_spec.md` (FROZEN +
+Amendments 1–3), `plan.md`, and this log in full before any action.
+
+**Blindness re-verified at resume (not asserted — checked):**
+- `reports/agent_logs/r_audit_blind_loss.py` sha256 recomputed =
+  `52f678dac7ce1624e78788c01a6dbca8f63f901c40040f3cd41569676b5d37c8` — exact
+  match to the STEP-1 ledger entry above; artifact unaltered by the kill.
+- Its commit `1d2f3b4` stands in git history — the implementation provably
+  predates any S3b code A-MODEL is now regenerating. Blindness remains
+  structural, not merely procedural.
+- I have read NO S3b artifact: not `src/s3b_primary.py`, not
+  `outputs/checkpoints/s3b_work/`, not A-MODEL's log beyond M5. This holds
+  across the session boundary; the kill destroyed no blindness property.
+
+The written-in-advance checkability finding (auxiliary-NLL underdetermination,
+axes A–F) stands as logged, unchanged, for the FREEZE packet. Note that A-MODEL
+regenerating S3b from scratch does not weaken it: the finding is about the
+SPEC's underdetermination, and it was committed before either S3b attempt.
+
+STEP 2 and STEP 3 remain GATED on explicit LEAD dispatch. Idle.
+
+## 2026-07-17 — S3b blind loss re-derivation, STEP 2 (fixed-batch reproduction)
+
+Dispatched by LEAD (ledger B76). Authorized inputs ONLY: `model_spec.md` §3
+(+Amendments) and `outputs/checkpoints/s3b_work/fixed_batch/`. STILL FENCED and
+NOT read: `src/s3b_primary.py`, `s3b_primary.md`, `s3b_stats.json`, a-model.md
+M6+, process_log B73+. Driver `scratchpad/audit_s3b_step2.py` LOADS the kit and
+SELECTS among the pre-committed parameterizations of the committed artifact
+`r_audit_blind_loss.py` (sha `52f678da…`, re-verified this session). No term of
+the implementation was modified, extended, or reimplemented.
+
+**Kit:** deterministic batch n=8125 (4096 NLL-eligible = label_c==1 ∧ k_raw≥1),
+u*=25, λ=0.3, μ₁=0, μ₂=1, three training tags (t0_init, t1_epoch1, tE_final) +
+tE_reload. Per-term float64, per-row F/p/R/q/F_pert persisted.
+
+### Reproduced to float tolerance (every training point)
+| Quantity | max |diff| | axis resolved |
+|---|---|---|
+| R = 1−(1−p)^min(u,u*) vs kit R | 1.1e-16 | structural link exact (u_raw≡u_capped here) |
+| q = F·R vs kit q | 0.0 | — |
+| **BCE(Y, F·R)** | **0.0** (all 3 pts) | **D: reduction = MEAN** (sum off by ~1e4) |
+| Ω₁ raw over ALL batch rows | 1.1e-16 | **F: p̄ over full batch**, not eligible-only (elig-only off ~0.01–0.17) |
+| Ω₂ raw over ALL batch rows | 3e-21 | **F: Ω₂ subsample = full batch** (elig-only off) |
+| aux NLL **no-trunc** decomposition | 1.8e-15 | **C: binomial coeff INCLUDED**; mass success-prob = **p**; k=k_capped, n=u_capped, mean |
+| kit `nll_logR_mean` vs my mean(log R)[elig] | 3.5e-18 | (diagnostic, see below) |
+| kit `total` arithmetic identity | 0.0 | bce+λ·nll_mean+μ₂·Ω₂ internally exact |
+
+Self-corrections vs my STEP-1 PRIMARY guesses (pre-committed, both among my
+swept parameterizations, so selection — not a fix): **C** resolved to
+include_coeff=**True** (I'd primaried False); **A** resolved as below (I'd
+primaried θ=R).
+
+### DIVERGENCE (reported verbatim per dispatch) — the operative NLL
+The NLL that actually enters `total` is `nll_mean`, and **my committed
+implementation cannot reproduce it under ANY of its pre-committed
+parameterizations.** My closest (nll_no_trunc, exact) falls short of `nll_mean`
+by exactly the kit's `nll_logR_mean` at every point:
+
+| tag | my nll_no_trunc | kit nll_mean | gap | = kit nll_logR_mean |
+|---|---|---|---|---|
+| t0_init | 6.015399332260967 | 5.977159714749588 | −0.03824 | −0.038239617511381 |
+| t1_epoch1 | 5.301005857691215 | 5.279236234614322 | −0.02177 | −0.021769623076895 |
+| tE_final | 4.964091630115034 | 4.947727911874010 | −0.01636 | −0.016363718241025 |
+
+Consequence: my independent `total` (using no-trunc NLL) exceeds kit `total` by
+exactly λ·(−logR) = 0.01147 / 0.00653 / 0.00491 at t0/t1/tE. So `total` is
+likewise not independently reproducible under my committed parameterizations.
+
+### Divergence fully characterized (diagnostic, computed OUTSIDE my committed
+### parameterizations — flagged as such, not a change to the implementation)
+`nll_logR_mean` = mean over eligible rows of **log R**, R = 1−(1−p)^u, to
+3.5e-18. Therefore A-MODEL's aux likelihood is a **ZERO-TRUNCATED BINOMIAL**:
+NLL = −log[ Binom(k; u, p) / (1−(1−p)^u) ] = (−log Binom, my no-trunc) + log R.
+The truncation normalizer P(k≥1) is exactly R — the u-link resurfaces as the
+conditioning constant. Complaint-positive eligibility (k≥1 by construction)
+makes conditioning on k≥1 the principled choice.
+
+**This vindicates my STEP-1 checkability finding (axes A/B), it does not refute
+it.** My axis-A binary (θ=R OR θ=p) was itself under-specified: the truth uses
+BOTH — p as the per-unit mass parameter, R as the zero-truncation normalizer —
+a third structure the spec §3 phrase "λ · NLL of observed complaint counts under
+head p" does not pin down. The spec determines every term I could reproduce
+(BCE, penalties, the binomial mass, coeff, grain, reductions) and is silent on
+exactly the one place my implementation and A-MODEL's diverge (truncation). That
+is the finding: the reported loss is spec-determined up to the truncation choice,
+which is implementation-defined.
+
+**In A-MODEL's favor (noted, not adjudicated):** the truncation was not hidden —
+the kit persists `nll_logR_mean` and the full `nll_no_trunc`/`nll` decomposition
+as separate terms, i.e. the choice is transparently exposed, and its arithmetic
+is internally exact (decomposition + total identities close to ≤1e-15). Whether
+the zero-truncated reading is the intended one is Ayur's to adjudicate at FREEZE.
+
+**Also observed (relevant later, not the step-2 deliverable):** clamp-binding
+counts all 0 (no p/q/trunc clamp fired); tE_reload term values are
+byte-identical to tE_final — reload determinism holds on this batch (full freeze
+bundle reloadability is a STEP-3 item).
+
+STEP 3 (code read + full S3a-style protocol audit) awaits LEAD dispatch. Idle.
+
+## 2026-07-17 — S3b blind loss re-derivation STEP 3 + full protocol audit — **REJECT**
+
+Dispatched by LEAD (ledger B78); all fences lifted. Read: `src/s3b_primary.py`
+(full), `outputs/checkpoints/s3b_primary.md`, `s3b_stats.json`, a-model.md M6,
+PROVENANCE S3b, process_log B73–B78, the freeze bundle, the 300+21 unit
+checkpoints, guards.jsonl. Every number re-derived independently
+(`.venv/bin/python`, `scratchpad/audit_s3b_step2.py` + ad-hoc); nothing on faith.
+
+### VERIFIED CLEAN (sign-off quality)
+- **(a) Axes A1–A10 vs code + kit, disclosure completeness.** Step-2's
+  zero-truncated-binomial finding is disclosed **in substance**: checkpoint
+  axis 1 + loss line ("NLL = zero-truncated binomial", "−log(1−(1−p)^u), exactly
+  −log R … proper conditioning on ≥1 event"), code `loss_terms` line 524–525
+  (`logR = log((1−(1−p)^ue).clamp_min)`, `nll = −(comb+klogp+uklog − logR)`).
+  The truncation I identified blind is explicitly the documented design, not an
+  undisclosed choice. A2 u-source (1,254,587/0/12,022), n_eligible 42,787,
+  k_exceeds-u by u* (14,309/11,298/10,358), pbar(all-dev,u*25)=0.5904 all
+  re-derived EXACT. A3/A4 (Ω₁, Ω₂ over all rows; pbar=Σk/Σu train-eligible) and
+  A8 (clamps, 0 binding on batch) confirmed by the step-2 reproduction.
+- **(b) Sequencing.** src/s3b_primary.py is UNCOMMITTED (HEAD 1d2f3b4 = my blind
+  step-1); at 07df605 (S3a) and 4959795 (B5) `git ls-tree` shows no s3b in src/
+  — baselines-before-primary preserved in history. Only "killed session"
+  reference in the code is the B68 regeneration provenance note (disclosure, not
+  reuse). torch-2.13.0 reuse is a PyPI package, not killed-session work product.
+- **(c) Locked-grid conformance.** space 2,592; n=60 seed-42 `rng.choice`
+  reproduced; 60 unique idxs; winner cfg 2009 and runner-up 1961 both ∈ sample;
+  decode of both matches. No off-grid config trained.
+- **(d) Selection + near-tie.** Winner re-derived from the 300 search units:
+  cfg 2009 mean AP(q) 0.3631432, runner-up 1961 0.3631290, margin **1.416e-5**.
+  Rule = mean AP(q) primary, tie-break zero-311 p@250(F) only on EXACT AP tie,
+  then idx. 2009's AP strictly exceeds 1961's → primary decides; tie-break never
+  invoked though 1961 has higher zero-311 (0.0952>0.0912). Mechanically correct;
+  honestly disclosed. E*=round(mean(2,12,10,6,18))=round(9.6)=**10** re-derived.
+- **(e) 5-seed spread.** `spread_units` varies ONLY the winner config over seeds
+  43–46 (no re-search); seed 42 = the search units themselves (disclosed reuse).
+  Per-seed means re-derived EXACT for all five (AP range .3512–.3653, std .0056);
+  VALIDATION-based, hyperparams fixed — spec §8 / Rule 10 honored, no test contact.
+- **(f) Freeze bundle + INDEPENDENT reload.** Bundle sha256 bb4016b8… and
+  frozen_config 90435616… match the checkpoint. **Independent numpy forward**
+  from the state_dict (my own MLP/LayerNorm/sigmoid, NOT A-MODEL's torch code)
+  on the fixed batch reproduces the persisted tE_final per-row F/p to **1.7e-16 /
+  2.2e-16** → the bundle genuinely reloads to identical validation predictions.
+  (A-MODEL's own float32 reload_verification = 0.0; the float32↔float64 gap to
+  final_scores is ~1.3e-7, expected.)
+- **(g)/(h) Sanctity + frame hashes.** guards.jsonl: **0 bright-line firings
+  (≥2026)**, max season touched **2025**, **15 distinct sites** — all
+  deterministic and correct. Both frame sha256s (477d3079…, 09f8e94d…) match the
+  live files AND PROVENANCE; asserted in-code at prep (Rule-9 drift guard).
+  Season 2026-27 structurally absent (spine ends 2025, asserted at load).
+- **(i) torch 2.13.0** disclosed in checkpoint + a-model.md + stats versions;
+  reuse ruled acceptable (package, not quarantined output); determinism
+  self-proven by bit-exact reload.
+- **(j) Storage.** data 355 MB + outputs 541 MB + imports 32 MB ≈ 928 MB ≤ 2 GB;
+  design.npy 506,643,728 B (483 MB) regenerable-cache characterization accurate
+  (deterministic from hash-asserted inputs), disclosed deletable at freeze.
+- **(k) Machine-generated table.** `s3b_work/s3b_table.md` is written by
+  `stage_report` from `summary`/`spread` and appears verbatim in the checkpoint;
+  every cell equals `s3b_stats.json` — no hand transcription (S3a failure mode
+  structurally avoided here).
+- **(l) Trailing-B4 language.** Net trails B4/B5 on every observed-label
+  validation mean, reported verbatim; §11 penalizes-correction caveat stated
+  both ways; G3 named as the binding §10 comparison; no directional claim. Clean.
+
+### DEFECT (the REJECT) — guard-pass count does not reconcile with its source
+`s3b_stats.json` `guard_assertions.n_recorded_passes` = **233** (echoed in the
+checkpoint line 164 "233 recorded passes … counts measured from the file
+post-rerun" and a-model.md M6). The source `s3b_work/guards.jsonl` currently
+holds **234** non-blank guard records. The committed deliverable does not
+reconcile with its own source.
+
+**Root cause (mechanical, in the code):** `make_capture()` (src/s3b_primary.py
+line 922) calls `fold_tensors(FOLD_ALL)` unconditionally, and `stage_refit`
+(line 1030) calls `make_capture` on EVERY `main()` invocation — including a
+fully-complete idempotent rerun. `fold_tensors → block() → assert_no_test_contact`
+**appends** a guard line each time. So guards.jsonl is append-mutated on rerun;
+the count was 233 when `stage_report` first wrote `s3b_stats.json`, and A-MODEL's
+own post-completion "idempotent rerun (ALL STAGES COMPLETE, verified)" appended
+the 234th AFTER — which `stage_report` cannot pick up (it early-returns once
+stats.json exists). I did NOT run the training pipeline this session; the drift
+is entirely within A-MODEL's own runs.
+
+**Two consequences, both stated inaccurately in the deliverables:**
+1. The headline count 233 is stale vs the file (234) — a committed, packet-bound
+   number that disagrees with its source (the S3a bar: deliverables must
+   reconcile with their machine source).
+2. The "idempotent rerun … recomputes nothing" / "counts measured from the file
+   post-rerun" claims are inaccurate: guards.jsonl **is** mutated on every rerun,
+   so the raw pass count is a non-reproducible append-only cumulative that will
+   drift on any future rerun (including a fix rerun) — an exact committed value
+   is structurally unkeepable.
+
+A-MODEL hit this identical append-only-guard failure mode at B5 (62→72) and there
+disclosed it with a "cumulative … post-rerun" snapshot caveat; that caveat was
+**not** carried into S3b, and the number is already stale.
+
+**Substance is unaffected:** the meaningful, deterministic sanctity facts — 15
+distinct sites, max season 2025, **zero** ≥2026 firings — are all correct and
+reproducible. This is a documentation/reconciliation defect on a non-load-bearing
+count, NOT a modeling, selection, or sanctity breach. No retraining, no model
+change.
+
+**Fix (documentation + trivial hygiene; no re-run of training):** report the
+deterministic guard facts (distinct sites / max season / bright-line firing
+count) as the headline, and either (i) drop the raw cumulative pass count, or
+(ii) label it explicitly an append-only cumulative snapshot (B5 pattern) and
+reconcile the stated figure to the file — across s3b_stats.json, s3b_primary.md,
+and a-model.md M6. Optionally make guards idempotent (dedupe on read, or stop
+make_capture's unconditional re-touch) so the count stops drifting. Re-audit is a
+one-item recheck.
+
+### STEP-2 FINDING CARRIED FORWARD (not a defect; FREEZE-packet item)
+The auxiliary-NLL truncation reading (zero-truncated binomial, normalizer R) that
+my blind implementation could not reach is a resolution of a spec-§3
+underdetermination (step-1 axes A/B). Per LEAD B78 it carries into the FREEZE
+packet as a written finding for **Ayur's** adjudication (is zero-truncated the
+intended likelihood?). A-MODEL disclosed it transparently; it is NOT a defect for
+A-MODEL to change, and no code change is authorized by it.
+
+**S3b VERDICT: REJECT** — single documentation/reconciliation defect (guard-pass
+count 233 vs source 234; append-only-on-rerun not caveated; "idempotent
+recomputes nothing" inaccurate for guards.jsonl). All modeling, loss
+implementation (spec-pinned terms reproduced to float tolerance at step 2), grid
+conformance, selection + near-tie mechanics, 5-seed validation-spread semantics,
+freeze-bundle reloadability (independently re-verified to 1e-16), frame-hash
+guards, storage, machine-generated tables, and §10/§11-bounded language are
+verified correct. No fabrication; the machine pipeline is right; the fix is
+doc-level. Step-2 truncation finding carries to FREEZE for Ayur.
+
+## 2026-07-17 — S3b re-audit (REJECT cycle 1 → **SIGN-OFF**)
+
+One-item re-audit per LEAD B83. Current source truth re-computed fresh from
+`guards.jsonl`: **234 records, 15 distinct sites, max season 2025, 0 ≥2026
+firings** (it did not drift further — the fix was applied by hand/doc, not a
+training rerun).
+
+- **(1) Four surfaces reconcile with the source.** s3b_stats.json
+  (`n_recorded_passes_cumulative_snapshot.value` = 234; `n_distinct_sites` 15;
+  `max_season_ever_touched` 2025; `n_2026plus_firings` 0), s3b_primary.md
+  (L164–173), a-model.md M6 (L162–163) + M7 (L167–181), and PROVENANCE.md S3b
+  (L532–539) all now headline 15 sites / max 2025 / zero ≥2026 firings with the
+  raw count relabeled a 234-at-reconciliation append-only snapshot. All four
+  match my fresh computation. The 4th-surface (PROVENANCE) echo of stale 233 that
+  A-MODEL flagged was relabeled under the same LEAD-authorized doc-only correction
+  (B81–B82), verified present.
+- **(2) Snapshot semantics accurate.** All four surfaces state the mechanism
+  correctly: `fold_tensors(FOLD_ALL)` in the fixed-batch capture path
+  (`make_capture`, s3b_primary.py L922, called by `stage_refit` L1030) re-asserts
+  and APPENDS on every `main()` invocation incl. fully-complete idempotent
+  reruns → the raw count drifts upward; B5-lineage caveat (M5) cited. Matches the
+  root cause I found at step 3.
+- **(3) Deterministic facts assertion-derived/correct.** 15 / 2025 / 0 equal my
+  independent fresh derivation from guards.jsonl exactly; the code's
+  `stage_report` (L1207–1209) derives distinct-sites (sorted set) and max-season
+  (max) by assertion, and those values match. NIT (not blocking): the
+  "reconciliation script" M7 references is not persisted in the repo — but I
+  assertion-derived the three facts myself from the source and they reconcile, so
+  the claim's substance holds regardless.
+- **(4) No out-of-scope diffs.**
+  - `s3b_primary.py` UNCHANGED: its `stage_report` still emits the ORIGINAL
+    guard_assertions structure (`n_recorded_passes: len(guards)`, `distinct_sites`,
+    `max_season_ever_touched`) — which now DISAGREES in structure with the
+    hand-reconciled stats.json. Had the code been edited to produce the new
+    structure, they would agree; the divergence PROVES the fix was doc-only and
+    the audited code surface is untouched. (Consequence, surfaced for
+    LEAD/Ayur: a delete+rerun of stats.json would regenerate the OLD structure
+    with a fresh drifted count, not the corrected snapshot; since `stage_report`
+    early-returns when stats.json exists, the corrected hand-reconciled file
+    persists. Accepted property of a LEAD-authorized doc-only edit of an
+    uncommitted deliverable.)
+  - Freeze bundle + config sha256 IDENTICAL (bb4016b8… / 90435616…).
+  - Fixed-batch KIT byte-identical: re-ran my step-2 driver — bce-diff 0.0,
+    nll_no_trunc exact, total-identity 0.0, R-link 1.1e-16 at t0/t1/tE + reload,
+    same as the step-2 read.
+  - winner.json unchanged (cfg 2009, mean AP 0.3631432).
+  - Collateral check: committed B5 artifacts (`b5_lgbm.txt`,
+    `b5_frozen_config.json`, `s3a_b5.py`) all UNCHANGED vs HEAD — the fix touched
+    nothing beyond the four authorized doc surfaces.
+
+**S3b VERDICT (post-correction): SIGN-OFF.** The sole reject-1 defect (guard-count
+non-reconciliation) is fixed doc-only across all four surfaces with accurate
+append-only-snapshot semantics and correct deterministic facts; the correction
+introduced no code, model, or kit change (all byte-verified); everything verified
+clean at the step-3 first pass stands. The step-2 auxiliary-NLL truncation
+(zero-truncated binomial, normalizer R) carries forward as a written FREEZE-packet
+finding for Ayur's adjudication — not a defect. S3b clears.

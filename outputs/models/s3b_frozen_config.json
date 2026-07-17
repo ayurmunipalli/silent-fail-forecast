@@ -1,0 +1,36 @@
+{
+  "architecture": "spec \u00a73 two-head net: shared MLP encoder (Linear-LayerNorm-ReLU-Dropout blocks), head F sigmoid, head p sigmoid, R = 1-(1-p)^min(u,u*)",
+  "config": {
+    "mu2": 1.0,
+    "mu1": 0.0,
+    "lr": 0.001,
+    "ustar": 25,
+    "lam": 0.3,
+    "dropout": 0.15,
+    "depth": 2,
+    "width": 256
+  },
+  "config_idx": 2009,
+  "seed": 42,
+  "e_star_epochs": 10,
+  "refit": "all dev seasons 2019-2025, cosine LR over 200 epochs stopped at e_star, no ES (A9)",
+  "selection": "mean val AP of F*R vs Y_obs; tie-break mean zero-311-stratum p@250 of F; then config_idx",
+  "loss": "L = BCE(Y_obs, F*R) + lam*NLL_zero-trunc-binomial(k|u,p) + mu1*Omega1 + mu2*Omega2 (resolved axes A1-A8 in src/s3b_primary.py header)",
+  "pbar_all_dev": 0.590411297789778,
+  "design": {
+    "n_cols": 100,
+    "meta": "outputs/checkpoints/s3b_work/design_meta.json"
+  },
+  "feature_recipe_hashes": {
+    "features_main.parquet": "477d3079fae0a4a76ee5507739c6f790448caa258c11ea78776583f2e4734090",
+    "features_b3.parquet": "09f8e94df5c51fa66778e17cc2d9bbba0eceb0aeef2453b411d7662ef324fa09"
+  },
+  "library_versions": {
+    "torch": "2.13.0",
+    "numpy": "2.5.1",
+    "pandas": "3.0.3",
+    "sklearn": "1.9.0",
+    "python": "3.12.13"
+  },
+  "train_threads": 3
+}
