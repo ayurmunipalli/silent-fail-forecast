@@ -539,3 +539,89 @@ idempotent reruns (fixed-batch capture path re-asserts; B5-lineage caveat).
 before commit; an earlier draft headlined the snapshot value 233.] **Storage:** ≈928 MB ≤ 2 GB (design.npy 483 MB is a
 regenerable cache, deletable at freeze). **Anomalies:** none; no Rule-9
 conditions.
+
+---
+
+## FREEZE ENTRY — 2026-07-20 (adjudicated 2026-07-18; spec Amendment 4)
+
+**Gate:** FREEZE APPROVED by Ayur (ledger B89, 2026-07-18) subject to
+Amendment 4 (ruled 2026-07-18, appended 2026-07-20 — session-loss
+interruption on record, ledger B90; resume verified by read-only audit).
+The freeze precedes Oct 1, 2026 by ~2.3 months; external timestamps: model
+commit 054f136 pushed 2026-07-17, packet commit 01e912b pushed 2026-07-17.
+
+### Complete G3 scoring set (Amendment 4(iii) — summer 2027 requires zero interpretation)
+
+**1. PRIMARY (frozen candidate):**
+`outputs/models/s3b_primary_seed42.pt` — sha256
+`bb4016b836d148766f95d17e45bbb127b874e22f3e5d33b43e39a9c8b5c27126`
+(93,186 params, winner cfg 2009, seed 42, E*=10 all-dev refit; commit
+054f136) + `outputs/models/s3b_frozen_config.json` — sha256
+`904356165858091f3d05c57fb2b0593c0efe9ff0b2070412ded23300b0e5b2e0`,
+pinning BOTH feature-frame recipe hashes: `features_main.parquet`
+`477d3079fae0a4a76ee5507739c6f790448caa258c11ea78776583f2e4734090`,
+`features_b3.parquet`
+`09f8e94df5c51fa66778e17cc2d9bbba0eceb0aeef2453b411d7662ef324fa09`.
+G3 frames are rebuilt by `src/s2_features.py` under Amendment 4(ii) window
+semantics; loss/architecture interpretation frozen per Amendment 4(i)
+(axes A1–A10, `src/s3b_primary.py` header). Deployment ranking = q = F·R;
+criterion-1 stratum ranking = F (spec §10).
+
+**2. B3 (deployed incumbent — the §10 comparison):**
+`imports/primary_lgbm.txt` — sha256
+`cd95a00e692a3d406c1a3aff1cabd1c3a384be227f7accea0dd97db7bdd38c93`
+(343-tree frozen WFF booster, imported by copy commit 0cd8294, READ-ONLY
+permanently). Scored on the B3-recipe frame: 30 columns, frozen-model
+`feature_names` order, categorical vocabularies fixed from the model's
+`pandas_categorical` footer (recipe in `src/s2_features.py`; dev-frame
+fidelity 26/30 bit-exact, S2 checkpoint).
+
+**3. B4 (two-stage IPW GBM):** `outputs/models/b4_propensity_lgbm.txt`
+(95 trees) sha256
+`f298f029b945829ff5b7685e026243cc96e5147e4309bbfaa65a46f58ec2ba6e`;
+`outputs/models/b4_risk_lgbm.txt` (282 trees) sha256
+`4fe42a228e2bc3751985a6a0624410942e8940415cd4fcdcc0a539d3656e289f`;
+`outputs/models/b4_frozen_config.json` sha256
+`8e816f4443cfcd72ca3171684aff06ce5988290001056e02a8a816ccb2798484`
+(commit 07df605, S3a sign-off).
+
+**4. B5 (uncorrected retrained twin, Amendment 3 — attribution only):**
+`outputs/models/b5_lgbm.txt` (405 trees) sha256
+`63eb6367641cf1c6206653660aecc917912b8593aeaa1366b31cc1a4d98739a1`;
+`outputs/models/b5_frozen_config.json` sha256
+`197e40c2bef4a395cd477f34517c329cf45e1f809857fa05508e23d70d9eb724`
+(commit 4959795, S3a-protocol sign-off).
+
+**5. B0–B2 (frozen definitions):** verbatim ports in `src/s3a_baselines.py`
+(commit 07df605; port lineage documented in
+`outputs/checkpoints/s3a_baselines.md`): B0 = persistence (prior-season
+label), B1 = logistic-4, B2 = trailing-3 class-C count (class-C
+restriction explicit in code, Rule 6). Recomputed at G3 on the G3 frame
+from these definitions — no stored model artifacts by design.
+
+**6. §10 criteria AS AMENDED (evaluated ONCE, at G3, vs B3):** spec §10
+criteria 1–4 with Amendment-2 pre-registered margins (1: zero-311-stratum
+p@250 ≥ 1.35× B3; 2: global p@250 ≥ 0.90× B3; 3: T = median
+rank-percentile improvement over silent-screened HSP buildings at W=30,
+one-sided exact sign test α = 0.05, realized n reported; 4: joint > B4 on
+1–3 else the two-stage result ships) + §10 secondaries as demoted +
+Amendment 4(i)/(ii) interpretations. Observed-label §11 caveat binds all
+reporting.
+
+### G3 scoring-data semantics (Amendment 4(ii))
+
+Fresh pull AT G3 (summer 2027); every feature window hard-bounded
+**< Oct 1, 2026** (pre-cutoff by WINDOW, not pull date). §1 cutoff,
+availability masks, sanctity guards, bright line unchanged. G3 pull
+provenance (dataset IDs, timestamps, row counts, window assertions)
+recorded in THIS file at G3.
+
+### State at freeze
+
+Season 2026-27 untouched: guards 15 sites / max season 2025 / zero ≥2026
+firings; both frames span 2017–2025. Resume-audit (2026-07-20, read-only,
+ledger B90) independently recomputed all sha256s above that exist on disk —
+all match — and reproduced the frozen model's fixed-batch forward pass
+bit-exact (float64) from the checkpoint alone. Validation numbers recorded
+as-is in the freeze packet (§10.4 binds at G3). **Anomalies:** none.
+BUILD PHASE CLOSED — project DORMANT until G3.

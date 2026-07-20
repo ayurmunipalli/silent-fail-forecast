@@ -286,3 +286,61 @@ effect (B5 vs B4, like-for-like frame, folds, grid, and selection).
 
 **§10 criteria UNCHANGED:** still measured against B3 — the deployed
 incumbent is the deployment comparison. B5 is for attribution, not pass/fail.
+
+**Amendment 4 — FREEZE adjudication: FREEZE APPROVED; §3 aux-NLL interpretation frozen; §9 clarified; freeze-entry mandate.**
+Ruled 2026-07-18, appended 2026-07-20. Author of record: Ayur Munipalli.
+
+**The FREEZE gate is adjudicated APPROVED** (packet of 2026-07-17, commit
+01e912b), subject to the three parts below. The frozen artifact is
+`outputs/models/s3b_primary_seed42.pt` with `s3b_frozen_config.json`, exactly
+as identified in the packet and PROVENANCE.
+
+**(i) §3 aux-NLL interpretation FROZEN (packet item A ratified).**
+A-MODEL's disclosed reading of §3's auxiliary likelihood is ratified as the
+frozen interpretation of §3:
+
+- **Zero-truncated binomial** at building-season grain: NLL =
+  −log[Binom(k; u, p) / R], with normalizer P(k≥1) = R = 1−(1−p)^u — the
+  u-link resurfacing as the conditioning constant;
+- **Eligible rows:** `label_c==1 AND k_raw≥1` (confirmed-incident exposure;
+  complaint-positive per grid §3 / §3(i)); exposure n = u = min(u_raw, u*),
+  count k = min(k_raw, u); k_raw = in-season **311-union** events only
+  (Amendment-1 boundary unchanged);
+- together with **ALL resolved implementation axes A1–A10** as disclosed in
+  the `src/s3b_primary.py` header (binding statements) and summarized in
+  `outputs/checkpoints/s3b_primary.md` — including log-binomial-coefficient
+  inclusion, mean-over-eligible reduction, u_raw fallback ladder, Ω₁/Ω₂ forms
+  and constants, design construction, init, ES loss, clamps, E*=10 refit, and
+  seeding.
+
+**Basis on record:** R-AUDIT's blind re-derivation converged on this reading
+independently (agreement 3.5e-18) from spec + fixed-batch kit alone; the
+single blind divergence sat exactly where §3 was silent. This amendment
+closes that silence per Rule 8. The underdetermined axes A–F (ledger B66,
+corrected B72) are resolved by this ratification.
+
+**(ii) §9 CLARIFIED, not changed — G3 scoring-data semantics.**
+§9's "build features at the Oct 1, 2026 cutoff from data as-of the freeze" is
+clarified to deployment semantics: G3 scoring features for season 2026-27 are
+built **at G3 (summer 2027) from a fresh pull whose feature windows are
+hard-bounded < Oct 1, 2026** — pre-cutoff by WINDOW, not by pull date. The §1
+temporal cutoff, the availability-mask discipline, the sanctity guards, and
+the bright line (Rule 3) are unchanged; no 2026-27 contact occurs before G3.
+G3 pull provenance (dataset IDs, pull timestamps, row counts, window
+assertions) is recorded in PROVENANCE at G3, not now.
+
+**(iii) PROVENANCE freeze-entry mandate.**
+The freeze entry written under this amendment enumerates the **complete G3
+scoring set**, such that summer 2027 requires zero interpretation:
+
+- **primary bundle:** `s3b_primary_seed42.pt` + `s3b_frozen_config.json`
+  (sha256s) + both feature-frame recipe hashes (features_main, features_b3);
+- **B3:** the imported frozen WFF artifact + the B3-frame recipe;
+- **B4/B5:** committed artifacts as audited under S3a;
+- **B0–B2:** their frozen definitions;
+- **§10 criteria as amended** (Amendment-2 pre-registration; criterion-3
+  realized-n reporting; §10.4 fallback).
+
+**Packet items B, C, D:** acknowledged as disclosed (hand-reconciled stats
+structure; one doc-only reject cycle; session-loss lineage). No action; on
+record via the packet and ledger.
