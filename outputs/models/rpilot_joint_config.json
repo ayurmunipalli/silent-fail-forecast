@@ -1,0 +1,40 @@
+{
+  "label": "RETROSPECTIVE AND NON-BLIND",
+  "pilot": "RP1 (Amendment 5(i)); cutoff 2025-10-01; folds v in {2021,2022,2023,2024}; dev 2019-2024; the frozen build-phase bundle s3b_primary_seed42.pt is untouched (D7)",
+  "architecture": "spec \u00a73 two-head net: shared MLP encoder (Linear-LayerNorm-ReLU-Dropout blocks), head F sigmoid, head p sigmoid, R = 1-(1-p)^min(u,u*)",
+  "config": {
+    "mu2": 1.0,
+    "mu1": 0.0,
+    "lr": 0.001,
+    "ustar": 25,
+    "lam": 0.3,
+    "dropout": 0.15,
+    "depth": 2,
+    "width": 256
+  },
+  "config_idx": 2009,
+  "mean_val_ap_q": 0.3434365565186644,
+  "seed": 42,
+  "e_star_epochs": 8,
+  "refit": "all pilot-dev seasons 2019-2024, cosine LR over 200 epochs stopped at e_star, no ES (A9 analog)",
+  "selection": "mean val AP of F*R vs Y_obs over pilot folds {2021,2022,2023,2024}; tie-break mean zero-311-stratum p@250 of F; then config_idx",
+  "loss": "L = BCE(Y_obs, F*R) + lam*NLL_zero-trunc-binomial(k|u,p) + mu1*Omega1 + mu2*Omega2 (Amendment-4(i) frozen axes A1-A10, src/s3b_primary.py header)",
+  "pbar_all_pilot_dev": 0.5817730253057096,
+  "design": {
+    "n_cols": 100,
+    "meta": "outputs/checkpoints/rp1_work/design_meta.json"
+  },
+  "feature_recipe_hashes": {
+    "features_main.parquet": "477d3079fae0a4a76ee5507739c6f790448caa258c11ea78776583f2e4734090",
+    "features_b3.parquet": "09f8e94df5c51fa66778e17cc2d9bbba0eceb0aeef2453b411d7662ef324fa09"
+  },
+  "library_versions": {
+    "torch": "2.13.0",
+    "numpy": "2.5.1",
+    "pandas": "3.0.3",
+    "sklearn": "1.9.0",
+    "lightgbm": "4.6.0",
+    "python": "3.12.13"
+  },
+  "train_threads": 3
+}

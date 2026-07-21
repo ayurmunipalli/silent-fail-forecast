@@ -179,3 +179,62 @@ s3b_primary.md and the M6 line above. Deterministic facts re-verified from
 guards.jsonl in the reconciliation script (sites and max-season asserted
 equal). NO code change (R-AUDIT's guard-idempotency hygiene declined by LEAD
 — audited surface unchanged), no re-run, no retraining, nothing else touched.
+
+---
+
+**M8 | 2026-07-21 | Stage RP1 (R-PILOT, Amendment 5(i)): re-selection/re-training at pilot cutoff Oct 1, 2025 — complete. RETROSPECTIVE AND NON-BLIND.**
+
+Dispatch: LEAD, RP1, after RP0 sign-off (assertions D1–D8 binding). Read before
+acting: CLAUDE.md, model_spec.md through Amendment 5, plan.md, locked
+hyperparam_grid.md, s3a_baselines.md, s3b_primary.md, r-audit.md RP0 section,
+this log. Everything mechanical: same locked grids, same n=60 seed-42 samples
+(verified identical config indices as build), same pre-registered selection
+rules, Amendment-4(i) axes A1–A10 verbatim, folds v ∈ {2021..2024} only, dev
+2019–2024 (D2 asserted; season 2025 never in any dev structure — its rows are
+materialized solely by the whole-file D1-hash/D4-max-season assertions at load
+and dropped on the next statement).
+
+Script: src/rp1_pilot.py — imports the audited S3a/S3b machinery (metrics,
+grid decode/sample, lgb params, loss_terms/build_model/eval_pass/seeding);
+line-mirrors only season-hard-coded orchestration with pilot constants
+(labeled MIRROR with source lines; pilot resolutions P1–P7 in header).
+Idempotent, epoch-resumable, torch 3 threads, D7 preflight sha256 snapshot of
+all pre-existing models/imports re-verified unchanged at report; D8 label
+stamped everywhere.
+
+Results (4-fold means; machine table in rp1_work/rp1_table.md, pasted verbatim
+into outputs/checkpoints/rp1_pilot.md; full numbers rp1_work/rp1_stats.json):
+B0 .1476/.6210/.0180 · B1 .2104/.5550/.0410 · B2 .1913/.6360/.0390 ·
+B3 .3694/.8260/.1170 (in-sample v=2021–23; no 2025 row scored, P7) ·
+B4 .3695/.8050/.0980 · B5 .3701/.8020/.0850 · joint(q) .3434/.7250/.0830.
+Joint trails B4/B5 on every observed-label mean again (§11 caveat attached;
+RP2 adjudicates the pilot question). Winners: joint cfg 2009 (same index as
+build; per-fold APs/best-epochs for shared folds reproduce build exactly —
+determinism identity disclosed in checkpoint; E*=8); B4 s1 cfg 5411 (same as
+build; runner-up cfg 1080, margin 1.9e-5 [corrected from 3.2e-5 after R-AUDIT
+RP1 reject 1 — traces to rp1_stats.json]); B4 s2 cfg 13411 (runner-up = build
+winner 21485, margin 3.3e-5 near-tie); B5 cfg 13411 (runner-up = build winner
+20928, margin 1.3e-4 near-tie [corrected from 1.4e-4 after R-AUDIT RP1 reject
+1 — traces to rp1_stats.json]; same operative config as B4 s2). Joint runner-up 1961
+margin 1.7e-3, higher zero-311 tie-break metric (rule fired on exact ties
+only, as frozen). 5-seed spread (42–46, pilot folds): AP .3283–.3465
+(std .0072), zero-311 p@250 .074–.083 (std .0030). Artifacts: rpilot_joint_
+seed42.pt + config, rpilot_b4_* (90/332 trees), rpilot_b5_* (307 trees).
+
+Incidents (all operational, none touching numerics; full detail in checkpoint
+deviations): (i) Monitor-tool misfire logged by LEAD as harness mechanic
+(ledger B102); (ii) background loop externally detached/killed by the harness
+3× — mid-run Rule-1 state report delivered to LEAD, training halted on LEAD's
+freeze, resumed on authorization; epoch-level resume clean (257/257 units,
+zero losses/errors/leftovers); (iii) spawn workers segfaulted (SIGSEGV) via
+duplicate OpenMP runtime — lightgbm's libomp loading before torch's in
+children re-executing rp1_pilot as __mp_main__ (s3b never faced this: no
+lightgbm import); isolated by controlled A/B; fixed by order-critical torch-
+first import + replacing the queue mirror with static shards + hard child
+exit-code checks (the old bare except had swallowed the crashes silently).
+Crashed children died pre-training; zero files ever written by them.
+(iv) B0/B2 3rd-decimal shifts vs build = tie-key permutation over the pilot
+universe (AP tie-key-free, unaffected). Guards: 44 distinct sites, max season
+touched 2025 (load sites only), zero ≥2026 firings (raw 390 = append-only
+snapshot). Storage 1.443 GB ≤ 2 GB. No Rule-9 conditions. No commits (LEAD's).
+Reported to LEAD; idle pending R-AUDIT RP1 / RP2 dispatch.

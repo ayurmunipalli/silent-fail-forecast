@@ -1191,3 +1191,341 @@ incl. the step-2 divergence and the A–F/B72 axes lineage; adjudication items A
 carry no recommendation language and pre-resolve nothing reserved to Ayur; the
 reject cycle is disclosed accurately. Clear to reach Ayur; adjudication is
 Ayur's alone.
+
+---
+
+# R-PILOT PHASE
+
+## 2026-07-21 — RP0 audit: standing S2-class temporal-leakage protocol re-run at PILOT cutoff Oct 1, 2025 (Amendment 5) — **SIGN-OFF (binding)**
+
+Dispatched by LEAD. Amendment 5 read in full before auditing. This is the S2
+leakage protocol re-executed at the pilot cutoff; Amendment 5 pins that the
+hash-pinned S2 frames are REUSED, so the audit re-verifies the load-bearing
+lines rather than re-litigating the whole S2 (my 2026-07-16 TEMPORAL-LEAKAGE
+SIGN-OFF stands as the base). Every check re-derived live with `.venv/bin/python`.
+
+### Hash pins re-verified on disk (all four MATCH exact)
+- `features_main.parquet` sha256 `477d3079…4734090` (35,404,008 B) ✓
+- `features_b3.parquet`   sha256 `09f8e94d…f324fa09` (27,524,818 B) ✓
+- `s3b_primary_seed42.pt`  sha256 `bb4016b8…c5c27126` (383,035 B) ✓ (frozen bundle untouched)
+- `s3b_frozen_config.json` sha256 `90435616…0b0e5b2e0` (1,255 B) ✓ (frozen bundle untouched)
+
+Frozen bundle committed at 054f136; both files git-tracked, unmodified. The
+frames are BYTE-IDENTICAL to the S2 deliverables I signed off — so every S2
+leakage property I established transfers unchanged; only the load-bearing
+season-2025 lines are re-verified below at the pilot cutoff.
+
+### (a) Frames-reused clause — season-2025 rows encode nothing on/after Oct 1, 2025 — **VERIFIED**
+The pivotal pilot fact: the PILOT cutoff for the LATEST season (2025) is
+Oct 1, 2025 — which is EXACTLY the build-phase per-target-season cutoff
+`cutoff = pd.Timestamp(sy,10,1)` for sy=2025 (s2_features.py L345). The frames
+are per-target-season by construction, so season-2025 rows were already built
+to the Oct-1-2025 boundary. Re-verified per family:
+- **Families 1, 5 (season-indexed):** for sy=2025 read seasons `s < 2025`
+  (viol_lag1=season 2024 ends 2025-05-31 < cutoff; viol_cnt_prior*, ctx cum,
+  portfolio_loo over `s ≤ 2024`). Rolling state (`last_pos`, `cum_*`,
+  `own_cum_*`) rolls AFTER emit (L424–431) → prior seasons only; LOO subtracts
+  the index building. No self/target read.
+- **Families 2, 3 (calendar-year):** load-bearing lines L157/L182 build the
+  matrices with `range(·, max(SY))` where max(SY)=2025 → **columns cap at 2024,
+  no 2025 column exists**. For sy=2025 the reads are `m[2024]` / `P311[2024]`
+  and cum over `y ≤ 2024`. A target-year (2025) read is a **KeyError —
+  structurally impossible, not merely avoided**. Calendar 2024 ends 2024-12-31
+  < 2025-10-01. Re-derived live: ctx_yrs max=2024, c311_yrs max=2024.
+- **Families 6, 7 (timestamp-windowed):** every slice passes through `win()`,
+  which hard-asserts `hi ≤ cutoff` (L106). For sy=2025 all window his ∈
+  {2025-06-01 (ps), 2025-10-01 (t365/t730)} ≤ 2025-10-01. **Empirical live
+  re-derivation from raw:** max `created` entering any season-2025 311-union
+  window = **2025-09-30 23:57:03**; max `received` entering any ygpa window =
+  **2025-09-30 23:55:56** — both strictly < 2025-10-01 (reproduces my S2
+  finding exactly). The raw caches DO hold **347,061** 311-union and **350,512**
+  ygpa rows dated ≥ 2025-10-01 (pulled in 2026); **all are structurally excluded**
+  by the `win()` guard — the pilot-relevant proof that later-vintage data cannot
+  reach a season-2025 feature. Masks NULL-not-zero unchanged (avail codes per
+  season from s2_stats mask_coverage; season 2025 fully covered ps/365/730=1/1/1).
+- **Availability masks:** target-season reads impossible by the column-cap +
+  `win()` guard jointly; no NULL is a disguised zero (S2 finding, frames
+  identical).
+- **C1/C2 structural-snapshot ruling (family 4 PLUTO, family 5 portfolio_size):**
+  current-vintage snapshots of slowly-varying structural/ownership attributes.
+  My S2 ruling ACCEPTED these (no post-cutoff EVENT info; WFF R-LEAK precedent).
+  It applies to the pilot UNCHANGED — the pilot alters only the fold plan, not
+  feature construction, and season-2025's cutoff is identical to build-phase.
+  **(a) VERDICT: PASS.**
+
+### (b) Fold plan — selection/training has ZERO contact with season 2025 — **VERIFIED**
+Re-executing the locked-grid selection over forward-chaining folds
+v ∈ {2021,2022,2023,2024} (train ⊆ seasons < v, validate on v; never random
+K-fold). Exact season sets (model-row dev floor = 2019 per spec §2; 2017-18/
+2018-19 rows serve as lag-feature history ONLY, not training rows):
+- **v=2021:** train {2019, 2020} · validate 2021
+- **v=2022:** train {2019, 2020, 2021} · validate 2022
+- **v=2023:** train {2019, 2020, 2021, 2022} · validate 2023
+- **v=2024:** train {2019, 2020, 2021, 2022, 2023} · validate 2024
+
+Max validation fold = **2024**; the union of all train∪validate seasons across
+the four folds = {2019…2024}. **Season 2025 (=2025-26) is never loaded** in any
+RP1 selection/training fold — held out for the single RP2 shot. This is the one
+substantive delta from build-phase (which ran v up to 2025); the pilot simply
+drops the v=2025 fold. Masked families 6/7 on train seasons 2019/2020 are
+NULL-masked exactly as build-phase B4/B5 handled them — no leakage.
+**(b) VERDICT: PASS.**
+
+### (c) B3-as-is on season-2025 rows — no leakage — **VERIFIED**
+`imports/primary_lgbm.txt` (frozen WFF booster, 343 trees, trained ≤2023 — never
+retrained; WFF read-only). Scoring season-2025 rows introduces no leakage on
+two independent grounds: (i) the booster parameters are frozen on ≤2023 data —
+season 2025 did not exist as data at its training, so no target-season
+information can reside in the model; season 2025 is genuinely OUT-of-sample for
+B3 (build-phase noted 2024/2025 out-of-sample vs WFF training seasons 2021-23).
+(ii) the B3-frame feature columns for season-2025 rows are pre-cutoff by item
+(a). No path for on/after-Oct-1-2025 information into a B3 season-2025 score.
+**(c) VERDICT: PASS.**
+
+### (d) Binding assertions the RP1/RP2 pilot scripts MUST carry
+No pilot code exists yet (src/ = p1–p4, s1, s2, s3a_baselines, s3a_b5,
+s3b_primary — clean slate). The following are the guard assertions the pilot
+scripts must carry for this sign-off to hold in execution:
+
+**RP1 (re-selection + re-training, folds ≤ 2024):**
+- **D1 — frame-hash pin (Amendment 5 REUSE + Rule-9 drift guard, the S3b
+  pattern):** at load assert sha256(features_main)==`477d3079…` AND
+  sha256(features_b3)==`09f8e94d…`. No frame regeneration, no new pull.
+- **D2 — dev max-season guard:** `assert dev.season.max() == 2024` AND
+  `2025 not in set(dev.season.unique())` — season-2025 rows never enter RP1.
+- **D3 — fold plan:** folds exactly v ∈ {2021,2022,2023,2024}, `max(v)==2024`,
+  forward-chaining train ⊆ seasons < v (never random K-fold).
+- **D4 — bright-line hard-stop UNCHANGED:** existing `assert_no_test_contact`
+  guard fires on any season ≥ 2026; frame load asserts `max(season)==2025`.
+  Season 2026-27 absolutely untouched (Rule 3).
+- **D5 — locked selection unchanged:** same 2,592-config grid, n=60 seed-42
+  sample; pre-registered rule (mean val AP(q), tie-break zero-311-stratum p@250);
+  refit-E*; Amendment-4(i) frozen NLL-interpretation axes — for the §3 joint,
+  B4, and B5. B0-B2 recomputed from frozen definitions.
+- **D6 — seed 42 (Rule 10); 5-seed spread (seeds 42–46) VALIDATION-based over
+  folds ≤ 2024**, never season-2025-based (spec §8, Rule 10 — settled doctrine).
+- **D7 — frozen/committed artifacts read-only:** no pilot artifact overwrites,
+  shadows, or renames `s3b_primary_seed42.pt`, `s3b_frozen_config.json`, or any
+  committed baseline artifact; pilot outputs live in a distinct namespace.
+- **D8 — RETROSPECTIVE AND NON-BLIND label (Amendment 5(iii))** stamped in
+  every pilot artifact, table, and log.
+
+**RP2 (single-shot evaluation on season 2025-26):**
+- **D9 — season 2025 loaded ONLY in the RP2 script:** `assert` the eval slice's
+  seasons == {2025}; contacted exactly once; predictions persisted; reported
+  as-is.
+- **D10 — B3 scored as-is:** frozen booster, 343-tree assertion, no WFF
+  retraining; bright-line guard (≥2026) still active.
+- **D11 — §11 observed-label caveat attached to every number;** result disclosed
+  whichever direction it lands (Amendment 5(iii)); the frozen G3 pre-registration
+  (§10 margins, frozen bundle, Amendment-4 freeze entry, 2026-27 bright line)
+  is UNTOUCHED and reported separately — R-PILOT carries no G3 weight.
+
+### Rule-9 / anomalies
+None. No fabrication, no schema surprise, no unanticipated condition. The pilot
+touches season 2026-27 in no way (frames end at 2025 by construction; Rule 3
+intact). My own review touched no 2026-27 data.
+
+**RP0 VERDICT: SIGN-OFF (binding).** (a) frames-reused clause holds — season-2025
+rows encode nothing on/after Oct 1, 2025 (calendar-year target read structurally
+impossible; windowed max 2025-09-30 23:57 < cutoff; later-vintage raw rows
+structurally excluded); (b) fold plan v∈{2021–2024} gives selection/training
+zero contact with season 2025; (c) B3-as-is on season-2025 rows introduces no
+leakage; (d) the eleven binding assertions above must appear in RP1/RP2 code.
+Frames + frozen bundle hash-verified untouched. Pilot training may begin subject
+to the RP1/RP2 scripts carrying D1–D11 (I re-audit them at RP1/RP2 per the
+standing per-stage protocol).
+
+## 2026-07-21 — RP1 audit (A-MODEL): re-selection/re-training at pilot cutoff — **REJECT** (cycle 1)
+
+Dispatched by LEAD (standing per-stage protocol; verify implementation vs the
+RP0 assertions D1–D11). Materials: `src/rp1_pilot.py`, `outputs/checkpoints/
+rp1_pilot.md`, `rp1_work/rp1_stats.json` + `rp1_table.md` + all unit jsons +
+guards.jsonl + models_preflight.json, the rpilot_* artifacts, `a-model.md` M8,
+process_log B103/B104, and the build `s3b_work/` units for the determinism
+identity. Every number re-derived independently (`.venv/bin/python`); nothing on
+faith. Ten dispatched items below.
+
+### VERIFIED CLEAN (sign-off quality)
+- **(1) D1–D8 carried in substance.** D1 frame-hash pin: `load_pilot_dev`
+  asserts sha256(features_main)==SHA_MAIN (L208), `prep_design` asserts
+  sha256(features_b3)==SHA_B3 (L267); no regeneration/pull. D2: `dev.season.max()
+  ==2024` AND `2025 not in dev` asserted (L215–217); the full-frame read
+  materializes 2025 rows ONLY for the D1 whole-file hash + D4 max-season assert,
+  dropped on the next statement (disclosed P1). D3: PILOT_VAL={2021,2022,2023,
+  2024}, forward-chaining `season < v` (dev floor 2019). D4: `guard()` (L160)
+  is the s3a/s3b hard-stop pattern verbatim, `FORBIDDEN_FROM=2026`, raises
+  AssertionError on any ≥2026 or outside-allowed; frame load asserts
+  max(season)==2025. D5: `sampled_configs(NET_DIMS/PROP_DIMS/RISK_DIMS)` reused
+  from the audited modules (identical 60 indices — verified below); pre-registered
+  rules re-executed; Amendment-4(i) axes A1–A10 imported from `s3b_primary`
+  (loss_terms, cap_uk, eval_pass) unchanged; refit-E*=round(mean per-fold best
+  epoch). D6: seed 42; spread seeds 43–46 over pilot folds ≤2024 only. D7:
+  preflight namespace + re-verify (below). D8: label in every artifact (below).
+- **(2) Selection re-derived independently, all three lanes — winners match.**
+  From the persisted unit jsons: **Joint** cfg **2009** mean AP(q)
+  0.3434365565, runner-up cfg 1961 0.3417637782 → margin **1.673e-3** (not a
+  near-tie); runner-up has HIGHER zero-311 (0.088 vs 0.083) but the frozen rule
+  is mean-AP-primary and 2009's AP strictly exceeds 1961's, so the zero-311
+  tie-break is correctly **NOT invoked** (fires on exact AP ties only) — winner
+  stands on AP. E*=round(mean(2,12,10,6))=**8**. **B4 stage-1** cfg **5411**
+  mean AP 0.9684620257 (runner cfg 1080 0.9684428770). **B4 stage-2** cfg
+  **13411** mean AP 0.3695269707, runner-up cfg **21485 (the build winner)**
+  0.3694936701 → margin **3.330e-5**; tie-break not needed. **B5** cfg **13411**
+  mean AP 0.3701259218, runner-up cfg **20928 (the build winner)** 0.3699977400
+  → margin **1.282e-4**; runner-up higher zero-311 (0.101 vs 0.085) but AP rule
+  frozen — winner AP strictly greater, applied mechanically. All four winners
+  and their per-fold vectors reproduce exactly. (Two runner-up **margin prose
+  figures** are the REJECT defect — see below; the winners themselves are
+  correct.)
+- **(3) Determinism identity EXACT.** All **240** shared-fold joint units
+  (60 cfgs × folds {2021,2022,2023,2024}, seed 42) reproduce the build-phase
+  `s3b_work` units to **max |ap_q diff| = 0.00e+00**, with **0** best-epoch
+  mismatches — despite the entirely different worker pool (static shards vs the
+  build's Queue). Strongest possible evidence that (i) pilot design typing came
+  out identical (100 cols, confirming P2), (ii) per-fold scalers/pbar are
+  train-fold-only, and (iii) seeding carries no universe/pool dependence.
+  A-MODEL's identity claim verified, not asserted.
+- **(4) Segfault episode — shard/pool-invariance verified + disclosure
+  accurate.** `stable_seed(*parts)=SeedSequence([seed,fold_code,epoch])`
+  (s3b L209–211); `build_model(cfg,d_in,seed,fold_code)` seeds init from
+  (seed,fold_code) only; `train_unit(cfg_idx,cfg,fk,seed)` takes no worker/shard/
+  pid identity; `_worker` merely iterates its shard. Unit values depend only on
+  (cfg,fold,seed,epoch) — shard assignment changes *which* child computes a unit,
+  never its value; item-3's exact identity is the empirical proof. Disclosure
+  (checkpoint deviation 2; torch-before-lightgbm L113/L115; duplicate-OpenMP
+  `__mp_main__` root cause) reconciles with the code; the bare-except swallow is
+  genuinely removed — `_worker` re-raises AssertionError and persists
+  `*.error.json` + re-raises other exceptions, and `run_pool` hard-checks both
+  the error-file glob AND nonzero child exit codes (L583–590). Complete + accurate.
+- **(5) Build-phase silent-swallow implication — none, confirmed from persisted
+  completeness.** Build `s3b_work/units` holds **0 of 300** search units missing
+  and **0 of 20** spread units missing; winner selection reads all 300 (a missing
+  unit is a FileNotFoundError) and the freeze proceeded. The latent Queue+bare-
+  except defect had zero build-phase impact. A-MODEL's assessment correct.
+- **(6) D7 — 10/10 pre-existing artifacts hash-unchanged.** `models_preflight.json`
+  snapshots 10 files (imports/ ×3 + outputs/models/ b4×3, b5×2, s3b×2); I
+  recomputed all 10 live → **all match**, including the **frozen bundle
+  `s3b_primary_seed42.pt` / `s3b_frozen_config.json` which additionally match
+  PROVENANCE (bb4016b8… / 90435616…)**. No `rpilot_*` file is in the snapshot
+  (correctly excluded via `PILOT_ARTIFACTS`); all 7 pilot outputs live only under
+  `outputs/models/rpilot_*` and `outputs/checkpoints/rp1_work/` — distinct
+  namespace, nothing frozen/committed overwritten or shadowed.
+- **(7) Guard facts reconcile with guards.jsonl.** Fresh from the file: **390**
+  raw records (append-only cumulative snapshot), **44** distinct sites, **max
+  season ever touched = 2025** occurring **only** at the two full-frame
+  load/assert sites, **zero** dev-side sites touching >2024, **zero** ≥2026 in
+  any record. stats.json guard_assertions (44 / 2025 / 0 / 390) match exactly.
+- **(8) Full table trace exact.** summary_means reproduce from per_season
+  (no mismatches); per_season for joint(q), B4(cfg13411), B5(cfg13411) reproduce
+  from the winner-config unit jsons to **max |diff| 0.0**; all 8 `rp1_table.md`
+  rows appear **verbatim** as computed from summary_means (4 dp). B3 row
+  0.3694/0.826/0.117 with the zero-season-2025 property enforced (`stage_b3`
+  restricts to PILOT_DEV, asserts max(season)==2024 before scoring). Machine-
+  generated, no hand transcription.
+- **(9) Label coverage complete.** "RETROSPECTIVE AND NON-BLIND" present in all
+  12 rp1_work stats/tables/winners/meta files, all 3 rpilot_* JSON configs, and
+  **all 257 per-unit jsons** (0 missing) incl. refit + spread units; the joint
+  .pt embeds it in its config payload. D8 satisfied.
+- **(10) Tie-key mechanism verified.** design n_rows = **1,084,746** (pilot
+  universe, seasons 2019–2024), so the seed-42 `rng.permutation` tie-key is drawn
+  over a different row count than build → B0/B2 (and any p@k under heavy score
+  ties) shift in the 3rd decimal, while AP (`average_precision_score`) is
+  tie-key-free and reproduces build exactly on shared folds (item 3). Mechanism
+  sound; no trapezoidal PR-AUC. Refit tree counts reconcile: prop
+  round(mean[51,82,162,66])=90, risk round(mean[400,242,287,400])=332, B5
+  round(mean[340,212,275,400])=307.
+
+### DEFECT (the REJECT) — a runner-up margin figure does not reconcile with its machine source
+**`rp1_pilot.md` L89 (echoed in `a-model.md` L214) states the B4 stage-1
+runner-up margin as "3.2e-5". The machine source does not support it:** winner
+cfg 5411 mean AP **0.9684620257**, runner-up cfg 1080 mean AP **0.9684428770**
+→ margin **1.9149e-5**. Stage-1 selection is by mean AP alone, so there is no
+alternative reading; and even the checkpoint's own displayed rounded means give
+0.96846 − 0.96844 = **2.0e-5**, not 3.2e-5. The stated figure reconciles with
+neither the precise source nor its own rounded display — a committed deliverable
+number that fails to trace to its source (the identical bar behind the S3a
+five-cell REJECT and the S3b guard-count REJECT). `rp1_stats.json` (machine
+source) is CORRECT and stores no wrong derived margin; this is prose-only, not a
+modeling/selection error — the winner (cfg 5411, = build) and both displayed
+means are right.
+
+**Secondary imprecision (same-cycle fix, not the basis for the REJECT):** the B5
+runner-up margin "1.4e-4" (`rp1_pilot.md` L98, `a-model.md` L216, `process_log`
+B104) is the difference of 5-dp-rounded means (0.37013 − 0.36999); the precise
+margin is **1.282e-4** (rounds to 1.3e-4). Reconcile to the precise value or
+label it a rounded-display difference.
+
+**Fix (documentation only; no code/model/selection/artifact change; one-item
+re-audit):** correct the B4 stage-1 margin to ≈1.9e-5 and the B5 margin to
+≈1.3e-4 across `rp1_pilot.md`, `a-model.md`, and (B5) `process_log` B104, so the
+stated margins trace to `rp1_stats.json`.
+
+### Substance unaffected
+All selection outcomes (four winners, matching build indices where applicable),
+the exact determinism identity, the segfault fix + shard-invariance, build-phase
+no-silent-swallow, D7 10/10 incl. frozen-bundle-vs-PROVENANCE, guard sanctity
+(44/2025/0, zero ≥2026 firings), the machine-generated table trace, label
+coverage, and the tie-key mechanism are all verified correct. Season 2025 never
+enters any RP1 dev structure; season 2026-27 untouched. No fabrication, no
+Rule-9 condition. The defect is a doc-level non-reconciling margin figure.
+
+**RP1 VERDICT: REJECT** (cycle 1) — single documentation defect (B4 stage-1
+runner-up margin 3.2e-5 does not reconcile with the machine source 1.9e-5;
+rp1_pilot.md L89 / a-model.md L214) plus one secondary margin imprecision (B5
+1.4e-4 vs 1.282e-4). All ten dispatched audit items are otherwise verified clean,
+including the exact determinism identity and full number tracing. Fix is
+doc-only; re-audit is a two-figure recheck. RP2 remains gated on the corrected
+sign-off.
+
+## 2026-07-21 — RP1 re-audit (REJECT cycle 1 → **SIGN-OFF**)
+
+Two-figure recheck per LEAD (ledger B106) after A-MODEL applied the doc-only
+corrections. Both touched surfaces re-read; machine source, code, and artifacts
+re-verified untouched.
+
+- **(1) B4 stage-1 margin corrected + traces to source.** `rp1_pilot.md` L89 now
+  "**margin 1.9e-5**" with a bracketed trace (L90–91): "corrected from 3.2e-5 …
+  0.9684620257 − 0.9684428770 = 1.9149e-5", cfg 1080 named. `a-model.md` L214
+  matches ("margin 1.9e-5 [corrected from 3.2e-5…]"). My independent re-derivation
+  from `rp1_stats.json`: winner 0.9684620257 − runner 0.9684428770 = **1.9149e-5**
+  → the stated 1.9e-5 reconciles.
+- **(2) B5 margin corrected + traces to source.** `rp1_pilot.md` L100 now
+  "**margin 1.3e-4**" with bracket (L101–103): "corrected from 1.4e-4 …
+  0.3701259218 − 0.3699977400 = 1.282e-4". `a-model.md` L217 matches. Re-derived
+  margin **1.2818e-4** → rounds to 1.3e-4 (2 s.f.); exact 1.282e-4 in the bracket.
+  Reconciles. (A first-pass rounding check of mine flagged this falsely by
+  rounding to 4 dp instead of 2 s.f.; the doc value is correct.)
+- **(3) B4 stage-2 margin untouched + still correct.** `rp1_pilot.md` L95 /
+  `a-model.md` L216 retain "3.3e-5"; re-derived 3.3301e-5 → correct, as required.
+- **(4) Old figures survive ONLY as provenance.** Every residual "3.2e-5" /
+  "1.4e-4" string in the two files sits inside a bracketed "corrected from …"
+  audit-trail note — no stale LIVE margin remains. Proper Rule-8-style disclosure
+  of the change, not a lingering error.
+- **(5) No out-of-scope diffs.** `rp1_pilot.md` winners section (L77–106)
+  re-read: only the two margin lines + their provenance brackets changed; joint
+  (cfg 2009, margin 1.7e-3, E*=8), B4-s2 (cfg 13411, 3.3e-5), B5 (cfg 13411),
+  and refit trees (90/332/307) identical to the reject-pass audit. `a-model.md`
+  edits are confined to the two margin figures within M8. **Machine source and
+  build products untouched:** `rp1_stats.json` and `rp1_table.md` mtimes predate
+  the md edits (not rewritten); stats winners (2009/5411/13411/13411) and all
+  three margins re-verified from it; `src/rp1_pilot.py` unchanged; **D7 preflight
+  10/10 artifacts still hash-unchanged, frozen bundle still matches PROVENANCE
+  (bb4016b8… / 90435616…)**; rpilot_* artifacts unchanged.
+
+Everything verified clean at the reject-pass first read (D1–D8 implementation,
+independent selection of all three lanes, the EXACT determinism identity — 240
+shared-fold units to 0.00e+00, segfault fix + shard-invariance, build-phase
+no-silent-swallow, guard sanctity 44/2025/0/zero-≥2026, full machine-generated
+table trace, label coverage on all 257 units + artifacts, tie-key mechanism)
+stands unchanged.
+
+**RP1 VERDICT (post-correction): SIGN-OFF.** The sole reject-1 defect (B4
+stage-1 margin non-reconciling) is fixed and now traces to `rp1_stats.json`; the
+secondary B5 imprecision is corrected; the untouched B4-s2 margin remains correct;
+the corrections are doc-only across the two authorized surfaces with accurate
+provenance and introduced no code/model/selection/artifact change (mtimes +
+hashes verified). Counter closed at 1. RP1 clears. RP2 (the single-shot 2025-26
+evaluation) may proceed under the standing audit protocols; the §11 observed-label
+caveat and the RETROSPECTIVE AND NON-BLIND label attach to every RP2 number, and
+the frozen G3 pre-registration remains untouched.

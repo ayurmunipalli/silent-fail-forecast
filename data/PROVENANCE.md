@@ -625,3 +625,81 @@ all match — and reproduced the frozen model's fixed-batch forward pass
 bit-exact (float64) from the checkpoint alone. Validation numbers recorded
 as-is in the freeze packet (§10.4 binds at G3). **Anomalies:** none.
 BUILD PHASE CLOSED — project DORMANT until G3.
+
+---
+
+## Stage RP1 — R-PILOT re-selection/training at cutoff Oct 1, 2025 (Amendment 5) — RETROSPECTIVE AND NON-BLIND
+
+**Compiled by LEAD from signed-off sources only** (`outputs/checkpoints/
+rp1_pilot.md` [R-AUDIT signed-off after 1 doc-only reject cycle],
+`rp1_work/rp1_stats.json`, `reports/agent_logs/r-audit.md` RP0–RP1
+sections; ledger B99–B107). Dormancy-exempt scoped phase per Amendment 5;
+the frozen G3 pre-registration is untouched.
+
+**Protocol:** RP0 leakage sign-off at the pilot cutoff PRECEDED all pilot
+code (binding assertions D1–D11). S2 frames REUSED per Amendment 5(i)
+(hashes asserted at load — the same values in this file's S2 entries).
+Folds v ∈ 2021…2024 forward-chaining; season 2025 rows NEVER loaded in RP1
+(dev universe asserted max season 2024); locked grid (n=60, seed 42) and
+pre-registered selection re-executed mechanically under Amendment-4(i)
+axes; frozen/committed artifacts read-only throughout (preflight sha256
+snapshot 10/10 unchanged, re-verified at audit incl. the frozen bundle).
+
+**Stage script:** `src/rp1_pilot.py` — idempotent, resumable; verified
+zero-recompute on rerun. Disclosed deviations from the audited s3b mirror
+(all operational, zero numeric impact — proven by the determinism
+identity below): order-critical torch-before-lightgbm import and a
+static-shard worker pool with hard child exit-code checks, after spawn
+workers died at startup by SIGSEGV (duplicate-OpenMP clash; the mirrored
+pool's bare-except had silently swallowed the deaths; crashed children
+never wrote a byte; build-phase implication audited: NONE — build
+completed 300/300 + 20/20). Episode + fixes in checkpoint and B103.
+
+**Selection (all winners independently re-derived by R-AUDIT):**
+- **Joint: cfg 2009 — the SAME config index as the build phase** — pilot
+  mean val AP(q) 0.3434, p@250(F) 0.7240, zero-311 p@250(F) 0.0830;
+  E* = 8; runner-up 1961 (margin 1.7e-3, higher zero-311 — same pattern
+  as build). **Determinism identity: all 240 shared-fold units reproduce
+  build S3b values to 0.00e+00** (0 best-epoch mismatches).
+- **B4:** stage-1 cfg 5411 (= build; runner-up cfg 1080, margin 1.9e-5);
+  stage-2 cfg 13411, mean AP 0.3695 (runner-up = build winner 21485,
+  margin 3.3e-5, near-tie).
+- **B5:** cfg 13411 (same operative config as B4 stage-2, twin-grid
+  coherent), mean AP 0.3701 (runner-up = build winner 20928, margin
+  1.3e-4, near-tie, higher tie-break — frozen exact-tie rule correctly
+  not invoked).
+- B0–B2 recomputed from frozen definitions; B3 folds-≤2024 row
+  0.3694/0.8260/0.1170 (in-sample v=2021–23 caveat; ZERO season-2025 rows
+  scored). B0/B2 tie-key 3rd-decimal shifts vs build disclosed
+  (pilot-universe permutation; AP tie-key-free, reproduces build exactly).
+- 5-seed VALIDATION spread (42–46, pilot folds): AP 0.3283–0.3465
+  (std 0.0072); zero-311 0.074–0.083 (std 0.0030).
+- The joint pilot model TRAILS B4/B5 on every observed-label validation
+  mean — recorded as-is; §11 observed-label caveat attaches.
+
+**Artifacts (all labeled RETROSPECTIVE AND NON-BLIND; distinct pilot
+namespace; nothing pre-existing touched):**
+| File (`outputs/models/`) | sha256 |
+|---|---|
+| `rpilot_joint_seed42.pt` | `93343fbda11d5efd9204b828075359d044f67d825eab89edb3555368cef757b0` |
+| `rpilot_joint_config.json` | `96cf28747eb49c5d7029daf8d88ee8c88b5f9b8aafbb07000e4b5a5a5f694f80` |
+| `rpilot_b4_propensity_lgbm.txt` (90 trees) | `c79ff723bed43ef5fe1c4ac8fdadc60274bf96d5183d445660bb449145508c07` |
+| `rpilot_b4_risk_lgbm.txt` (332 trees) | `6c7f5171d68850f96239f7cde90cc39d9bf4d08f87e50b6302189a9240d9e67a` |
+| `rpilot_b4_config.json` | `888549da0b5721ec4d071ddd2508529c136e5e3af1f332ff5f2a6e221b87affc` |
+| `rpilot_b5_lgbm.txt` (307 trees) | `a93c9089f22dbc082cb5e1810a214a330a6c99bd8a071c23e0a6a14ba0c5b302` |
+| `rpilot_b5_config.json` | `b76c9e34c0968924838ae9574f116478c276fbccceec3fa7e97fffefb076b72d` |
+
+Checkpoint `outputs/checkpoints/rp1_pilot.md`; stats
+`rp1_work/rp1_stats.json`; working files in `rp1_work/` (design.npy ~434 MB
+regenerable cache, retained for RP2/R-AUDIT).
+
+**Test-season sanctity:** guards 44 distinct sites; max season ever
+touched 2025 at the two full-frame load/assert sites only (2025 dropped
+next statement); ALL dev-side sites ≤ 2024; **zero ≥2026 firings**; raw
+390 passes = append-only cumulative snapshot (S3b semantics). Season
+2025-26 remains uncontacted by any model/selection structure — reserved
+for the RP2 single shot. **Storage:** 1.443 GB ≤ 2 GB. **Anomalies:**
+operational only (segfault episode above; two external loop kills resumed
+cleanly, 257/257 units, zero losses). R-AUDIT RP1: 1 doc-only reject
+cycle (two prose margins), corrected with bracketed audit notes,
+SIGN-OFF.

@@ -1,0 +1,62 @@
+{
+  "label": "RETROSPECTIVE AND NON-BLIND",
+  "pilot": "RP1 (Amendment 5(i)); cutoff 2025-10-01; folds v in {2021,2022,2023,2024}; dev 2019-2024",
+  "library": "lightgbm",
+  "version": "4.6.0",
+  "seed": 42,
+  "stage1_propensity": {
+    "config": {
+      "reg_lambda": 5.0,
+      "colsample_bytree": 0.6,
+      "subsample": 0.9,
+      "min_child_samples": 100,
+      "n_estimators": 400,
+      "learning_rate": 0.05,
+      "max_depth": 6,
+      "num_leaves": 127
+    },
+    "config_idx": 5411,
+    "mean_val_ap": 0.9684620256990668,
+    "frozen_n_estimators": 90,
+    "train": "all pilot-dev label_c==1 rows, target y_dup=1{in-season 311 events>=2}"
+  },
+  "stage2_risk": {
+    "config": {
+      "clip_floor": 0.05,
+      "scale_pos_weight": "1",
+      "reg_lambda": 5.0,
+      "colsample_bytree": 0.8,
+      "subsample": 0.7,
+      "min_child_samples": 50,
+      "n_estimators": 400,
+      "learning_rate": 0.02,
+      "max_depth": 10,
+      "num_leaves": 31
+    },
+    "config_idx": 13411,
+    "mean_val_ap": 0.3695269706837687,
+    "frozen_n_estimators": 332,
+    "train": "all pilot-dev rows, positives weighted 1/max(Rhat, clip_floor)",
+    "rhat_summary": {
+      "min": 0.3158837823328451,
+      "max": 0.9971180296302368,
+      "share_below_clip": 0.0
+    }
+  },
+  "protocol": "forward-chaining train [2019, v), ES-50 watching v (as frozen in hyperparam_grid.md), selection mean val AP / tie-break zero-311 p@250; refit all-pilot-dev with fixed n_estimators",
+  "dev_seasons": [
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "val_seasons": [
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "amendment1_boundary": "propensity target from the 311 UNION only; ygpa-z7cr present solely as c7_* features"
+}
