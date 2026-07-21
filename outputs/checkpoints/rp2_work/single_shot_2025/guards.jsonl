@@ -1,0 +1,10 @@
+{"where": "rp2 features_main.parquet load (filtered <= 2025)", "mode": "single_shot", "touched": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "allowed": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]}
+{"where": "rp2 eval universe", "mode": "single_shot", "touched": [2025], "allowed": [2025]}
+{"where": "rp2 features_b3.parquet load (filtered <= 2025)", "mode": "single_shot", "touched": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "allowed": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]}
+{"where": "rp2 features_main.parquet load (filtered <= 2025)", "mode": "single_shot", "touched": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "allowed": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]}
+{"where": "rp2 eval universe", "mode": "single_shot", "touched": [2025], "allowed": [2025]}
+{"where": "rp2 features_b3.parquet load (filtered <= 2025)", "mode": "single_shot", "touched": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "allowed": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]}
+{"where": "rp2 features_main.parquet load (filtered <= 2025)", "mode": "single_shot", "touched": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "allowed": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]}
+{"where": "rp2 B1 train", "mode": "single_shot", "touched": [2019, 2020, 2021, 2022, 2023, 2024], "allowed": [2019, 2020, 2021, 2022, 2023, 2024]}
+{"where": "rp2 B2 raw class-C counts", "mode": "single_shot", "touched": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "allowed": [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]}
+{"where": "rp2 hsp events season slice", "mode": "single_shot", "touched": [2025], "allowed": [2025]}

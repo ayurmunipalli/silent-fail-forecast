@@ -1529,3 +1529,232 @@ hashes verified). Counter closed at 1. RP1 clears. RP2 (the single-shot 2025-26
 evaluation) may proceed under the standing audit protocols; the §11 observed-label
 caveat and the RETROSPECTIVE AND NON-BLIND label attach to every RP2 number, and
 the frozen G3 pre-registration remains untouched.
+
+## 2026-07-21 — RP2 PRE-AUDIT (A-MODEL): src/rp2_eval.py before the single shot — **SIGN-OFF**
+
+G3-rehearsal-grade pre-audit dispatched by LEAD (ledger B111): the one D9 contact
+with season 2025-26 must not be spent on a defective script. Materials:
+`src/rp2_eval.py` (full), `rp2_work/rehearsal_2024/` (stats, table, predictions
+parquet, joint_scores.npz + meta, guards.jsonl), the frozen `hyperparam_grid.md`
+§7, `src/p3_hsp.py`, the audited `s3a_baselines`/`s3b_primary` constants +
+helpers, and RP1's `pilot_dev_scores.npz` for the decisive two-process check.
+Every number re-derived independently (`.venv/bin/python`). Eight dispatched
+items below — all clean.
+
+- **(1) D9 gate structurally sound.** Rehearsal (default) cannot materialize a
+  season-2025 row: `load_frame` applies a pyarrow row filter `season <= 2024` at
+  EVERY frame read (features_main read 3×, features_b3 1× — all filtered);
+  `cap_ts` truncates every timestamped raw read at `TS_CAP` = 2025-05-31 23:59:59
+  (end of season 2024); and `guard()` raises hard if `MODE=="rehearsal"` and 2025
+  is touched anywhere. `--the-single-shot` is the ONLY path to V=2025: MODE is
+  single_shot iff the flag is set, V=2025 iff single_shot, and
+  `assert (V==2025)==(MODE=="single_shot")`. The sentinel
+  `SINGLE_SHOT_SPENT.sentinel` is written BEFORE any 2025 contact (before
+  `eval_universe`); if it exists the script refuses to recompute (contacted
+  exactly once — a crashed shot burns the contact and escalates, by design). The
+  joint subprocess returns at the `--joint-subprocess` branch BEFORE the sentinel
+  logic, so it never double-writes it. The bright-line guard (≥2026) is unchanged
+  and structurally unreachable (frames end at 2025; season-2025's calendar-2026
+  tail labels as season 2025, not 2026).
+- **(2) Metric definitions correct.** AP = `average_precision_score` via the
+  audited `eval_with_strata` (no trapezoidal PR-AUC); p@250 via the seed-42
+  tie-key over the eval universe (AP tie-free). **Zero-311 stratum set-IDENTICAL
+  to the RP1/build definition** — recomputed over season 2024, rp2's "zero
+  311-union events in [2019-06-01, Oct 1 V)" gives the exact same 126,085-row
+  boolean as RP1's `zero311_mask` (`np.array_equal == True`), matching the RP1
+  fold-2024 stratum n. **Criterion-3 verbatim vs frozen grid §7:** dual screen
+  (zero 311 AND zero ygpa at W=30) PRIMARY, 311-only SENSITIVITY, distinct-
+  building dedupe, `pct=1−(rank−1)/(N−1)` rank1=highest ties-average over the full
+  universe, Δ_b = pct_model − pct_B3, T = median, one-sided exact sign test of H0
+  median(Δ)≤0 at α=0.05 with Δ=0 dropped AND counted, realized n reported. I
+  recomputed T, the binomtest p, and n/n_positive from the persisted `delta_full`
+  for all six (screen × model) cells — all reconcile exactly. W=30, α=0.05, and
+  the P3 association rule (both bounds inclusive, calendar-date truncation, int64
+  bbl, DAY_MOD stride) match the frozen definitions.
+- **(3) Scoring-set integrity.** All 7 sha256 pins (both frames + 4 rpilot_* +
+  B3 primary_lgbm.txt) match live files; the four rpilot_* pins equal the RP1
+  `rp1_stats.json` artifact hashes. Tree-count asserts: B4 prop 90, B4 risk 332,
+  B5 307, B3 343 (D10). The frozen build bundle `s3b_primary_seed42.pt` appears
+  ONLY in a docstring "NOT scored and NOT touched" note — never loaded, never
+  referenced in code; the joint is scored from `rpilot_joint_seed42.pt`.
+- **(4) Rehearsal reconciliation.** B0/B1/B2/B3 rehearsal-2024 AP reproduce the
+  RP1 fold-2024 AP **EXACTLY** (B0 .19916085, B1 .26200013, B2 .24928405, B3
+  .42159944, all <1e-12; frozen/same-lookback models, AP tie-free). B4/B5/joint
+  are refit-on-all-pilot-dev, hence IN-SAMPLE on 2024 and legitimately higher
+  (B4 .4589 vs fold .4390; joint_q .4309 vs fold .4234) — correctly caveated as
+  machinery-validation-only. **The dispatch's "B3 .4216 vs .4234" is a
+  mis-pairing: .4234 is the JOINT fold-2024 AP(q), a different model; B3 itself
+  reconciles exactly with no gap.** Predictions parquet → metrics recomputed
+  (B3/joint_F/B4): AP, p@250, zero-311 p@250 all reconcile; the md table's 8 rows
+  match the stats verbatim; REHEARSAL caveat present.
+- **(5) Two-process design — decisively faithful.** The torch subprocess
+  re-derives the eval universe via the same hash-asserted filtered read + sort;
+  the main process hard-asserts element-wise `npz["bbl"] == ev["bbl_n"]` (and
+  season == V) before accepting scores (confirmed: npz bbl == predictions bbl ==
+  sorted season-2024 universe). **Decisive check:** the subprocess rebuilds the
+  two-head architecture INLINE (not via RP1's `build_model`, to avoid importing
+  the lightgbm-bearing module) and reconstructs the design from the bundle's own
+  `design_cols`/`std_cols`/`scaler_all` + u* — its season-2024 F/p reproduce
+  RP1's own `pilot_dev_scores.npz` F/p over all 181,718 rows to **max |diff|
+  1.19e-07** (float32 epsilon). Design typing, scaler, u*=25 cap, and the q-link
+  (CLAMP_EPS 1e-7, U_FALLBACK 3.0 — both == s3b source) are thereby verified
+  equivalent to RP1's; a silent misalignment is excluded.
+- **(6) Eval-time label/stratum leakage-clean + Rule-6.** Labels are the frame's
+  `label_c` (audited whitelist build, class-C explicit in the S2 code) — no
+  re-derivation. Stratum reads only pre-cutoff 311 (created < Oct 1 V), touching
+  no season-V complaint row. Class-C explicit in both the B2 raw read and the HSP
+  violation waterfall; 311 never a label. B1 trains on seasons [2019, V) only
+  (its exact-AP match to RP1 fold-2024 confirms the window + leakage-cleanliness).
+- **(7) Two surprises documented to standard.** (i) torch+lightgbm cannot execute
+  in one process (generalized OpenMP clash, A/B-proven both directions) →
+  two-process design (docstring L80–94). (ii) Committed `rp1_pilot.py` carries a
+  mirror-image latent segfault for a from-scratch rerun (its GBM stages predate
+  the torch-first import order) — disclosed in the docstring L92–94 and to LEAD
+  (B111), ruled disclosure-only. This does NOT affect RP1's audited results,
+  which were verified by the determinism identity (rp1 units == build s3b units,
+  exact) and re-derived from persisted unit jsons — neither depends on a
+  from-scratch rerun.
+- **(8) Zero season-2025 contact so far.** `rp2_work/` contains only
+  `rehearsal_2024/`; no `single_shot_2025/`. Predictions season == {2024}, joint
+  npz season == {2024}, guards max season touched == 2024 (no 2025 in any
+  record). Criterion-3 coverage caps read [2019-06-01, 2025-05-31] — calendar
+  dates in season 2024's own window (extends through May 2025), NOT season 2025
+  (begins Oct 1 2025). The raw-store coverage check was metadata-only (min/max
+  date). No season-2025-derived value exists anywhere.
+
+### Minor observations (non-blocking, not defects)
+- The `"rp2 hsp events season slice"` guard logs a constant `[V]` rather than the
+  actual event seasons, so it cannot itself fire on a mislabeled event; the real
+  control is the `m_season == V` filter (season labeling verified vs `season_of`).
+  Substantively safe; the guard there is decorative.
+- U_FALLBACK (3.0), CLAMP_EPS (1e-7), the tree counts, and the architecture are
+  duplicated inline in the torch subprocess rather than imported — a deliberate
+  consequence of the two-process design (the subprocess must not import the
+  lightgbm-bearing modules). All verified == source, and the item-5 reproduction
+  (1.19e-07) confirms end-to-end fidelity. A fragility note for any future
+  artifact change, not a defect now.
+
+### Sanctity / Rule-9
+No fabrication, no Rule-9 condition. The D9 gate is structural (row-filter +
+truncation + mode guard + spend-once sentinel); season 2025 is unreachable
+without `--the-single-shot`, season 2026-27 unreachable at all. My own review
+touched no season-2025 or 2026-27 data.
+
+**RP2 PRE-AUDIT VERDICT: SIGN-OFF.** The script is faithful and the D9 single-
+shot gate is structurally sound: (1) rehearsal cannot materialize a 2025 row and
+`--the-single-shot` is the only 2025 path, with a spend-once sentinel; (2) all
+metric definitions — AP, p@250, the set-identical zero-311 stratum, and the
+verbatim grid-§7 criterion-3 statistic — are correct and the sign tests recompute
+exactly; (3) all 7 scoring-set hashes pin and the frozen bundle is untouched;
+(4) the rehearsal reconciles exactly with the audited RP1 machinery where
+definitions coincide; (5) the two-process joint scoring is decisively faithful
+(1.19e-07 vs RP1's own scores); (6) labels/stratum are leakage-clean and Rule-6
+compliant; (7) both surprises are disclosed to standard; (8) zero season-2025
+contact so far. The single shot is authorized to proceed. The standing RP2 audit
+binds the result: the §11 observed-label caveat and the RETROSPECTIVE AND
+NON-BLIND label attach to every number, and the frozen G3 pre-registration
+remains untouched.
+
+## 2026-07-21 — RP2 POST-AUDIT (A-MODEL): single-shot 2025-26 evaluation — **SIGN-OFF**
+
+Binding post-audit of THE single shot (dispatched by LEAD, ledger B116).
+Executed exactly once, 2026-07-21T06:52:14 (sentinel spent, exit 0). Materials:
+`single_shot_2025/` (rp2_stats.json, rp2_table.md, predictions_2025.parquet,
+joint_scores.npz+meta, guards.jsonl, sentinel), `rp2_eval.md`, and the raw
+HSP/violation/complaint stores for an independent criterion-3 rebuild. Every
+number re-derived independently (`.venv/bin/python`). Nine items — all clean.
+
+- **(1) One-shot discipline from disk.** Sentinel `spent_at`
+  2026-07-21T06:52:14.174305; single-shot outputs mtime 06:52:14–06:52:22
+  (sentinel 06:52:14 → joint subprocess npz 06:52:16 → predictions/stats/table
+  06:52:22; ~8 s, exit 0), rp2_eval.md 06:53. No `.tmp/.resume/.bak/.copy`
+  traces; no duplicate/recompute artifacts. **Rehearsal outputs untouched since
+  the pre-audit** — all `rehearsal_2024/*` mtimes are 06:38 (the Phase-A run),
+  predating the shot; not rewritten. A rerun refuses (sentinel present). Single
+  execution confirmed.
+- **(2) Every number re-derived from disk.** From `predictions_2025.parquet`
+  with a seed-42 tie-key over the 181,863-row eval universe (script order),
+  `eval_with_strata` recomputes **all 8 models × (AP, p@250, zero-311 p@250,
+  any-311 p@250) to max |diff| = 0.00e+00** vs `rp2_stats.json`. The 8
+  `rp2_table.md` rows equal the stats at 4 dp AND appear verbatim in
+  `rp2_eval.md`; the criterion-3 detail rows (realized n / dropped / signtest /
+  positive) appear verbatim in the checkpoint. Full chain parquet → stats →
+  table → checkpoint closed.
+- **(3) All six criterion-3 cells recomputed two ways.** (a) From the persisted
+  per-building `delta_full`: T, one-sided binomtest p, n_signtest, n_positive,
+  realized n all reconcile exactly for dual × {joint_F,B4,B5} and 311-only ×
+  {…}. (b) **Fully independent rebuild** from raw stores + parquet (my own HSP
+  membership, class-C + violationid-dedupe violation events, season-2025 +
+  in-program filters, my own per-bbl brute-force W=30 association, my own
+  `rank_pct`): waterfall reproduces exactly — **197 distinct HSP lots →
+  128,121 viol rows in → 7,810 HSP-lot class-C all-time → 1,488 in season 2025 →
+  0 pre-program → 0 window-coverage-excluded → 1,488 eligible → 104 dual-silent
+  events / 35 buildings, 114 / 36 buildings 311-only**; and every Δ vector
+  matches the persisted `delta_full` (all 6 cells `deltas_match=True`, T/p/n OK).
+  Result (recorded as-is, no adjudication): every cell has T < 0 and the
+  one-sided sign test does NOT reject H0 at α=.05 (dual joint_F T=−0.002221
+  p=0.99959; B4 −0.000352 p=0.95523; B5 −0.000374 p=0.95523; 311-only similar) —
+  disclosed in full per Amendment 5(iii); Ayur adjudicates meaning in the packet.
+- **(4) Stratum §6 set-identity on the 2025 universe.** I recomputed "zero
+  311-union events in [2019-06-01, 2025-10-01) per bbl" from the raw union and
+  compared **element-wise** to the parquet `zero311_stratum` column:
+  `np.array_equal == True`, count **120,631** (== claimed). Set-identity, not
+  merely count-match.
+- **(5) Scoring-set hash asserts fired.** All 7 pins (both frames + 4 rpilot_* +
+  B3 primary_lgbm.txt) recomputed live == the recorded `artifact_hashes_asserted`
+  the script asserted against; exit-0 confirms every `assert_sha` passed. B3
+  loads with **343 trees** (D10 tree-count assert). B4 prop/risk (90/332), B5
+  (307) tree-count asserts are in the fired scoring path.
+- **(6) Guard facts vs guards.jsonl.** 10 raw records across **6 distinct sites**
+  (frame-load + eval-universe entries appear more than once because the main
+  process AND the torch subprocess each re-derive the universe — a single-run
+  artifact, not idempotent-rerun drift); **max season touched = 2025** (the
+  authorized contact; only the two full-frame load sites and the eval-universe/
+  hsp-slice sites reach it), **zero ≥2026** in any record. Matches the stats
+  guard_facts (6 / 2025 / 0).
+- **(7) Label + §11 caveat coverage.** "RETROSPECTIVE AND NON-BLIND" present in
+  the checkpoint, stats (`label`), table (header), and the parquet `label`
+  column (all 181,863 rows == the label, sole category); the §11 observed-label
+  caveat is present in stats (`observed_label_caveat`) and the checkpoint;
+  `rehearsal_caveat` is null (single shot). D8/D11 satisfied.
+- **(8) Frozen bundle + G3 pre-registration untouched.** `s3b_primary_seed42.pt`
+  and `s3b_frozen_config.json` sha256 **MATCH PROVENANCE** (bb4016b8… /
+  90435616…) post-shot. The full G3-registered / committed set is unchanged: the
+  RP1-preflight 10 artifacts (frozen bundle ×2, B3 `primary_lgbm.txt`, committed
+  B4 ×3 + B5 ×2, imports spine/test) all re-hash **unchanged**, and both G3
+  feature frames (features_main, features_b3) match their recipe hashes. RP2
+  wrote only under `rp2_work/single_shot_2025/`; no frozen/committed/G3 file was
+  altered.
+- **(9) Predictions parquet fit for the packet.** Building-season grain:
+  `(bbl_n, season)` unique, season == {2025}, 181,863 rows; columns =
+  bbl_n, season, label_c, zero311_stratum, score_B0…B5, joint_F, joint_p,
+  joint_q, label — every model's deployment score + the joint F/p/q + the
+  stratum flag + the RETROSPECTIVE-AND-NON-BLIND label column. Re-sliceable
+  without re-contact (G3-semantics analog).
+
+### Sanctity / Rule-9
+No fabrication, no Rule-9 condition. The one D9 contact was spent exactly once on
+season 2025; season 2026-27 was never touched (zero ≥2026 guard firings; frozen
+bundle + G3 registration byte-identical). My own review read only season-2025 and
+prior data; no 2026-27 contact.
+
+### Result direction (verified, reported as-is — NOT an adjudication)
+Recorded per Amendment 5(iii): on the observed-label single shot the joint model
+beats B3 on overall AP (.4406 vs .4339) but B4/B5 lead both; on the zero-311
+stratum p@250 the joint (.1160) TRAILS B3 (.1240) while B4 (.1600)/B5 (.1520)
+lead; and the criterion-3 sign test does not reject for any model (all T<0).
+These are the pilot's numbers, disclosed whichever direction; interpretation is
+Ayur's in the pilot result packet and carries no weight at G3.
+
+**RP2 POST-AUDIT VERDICT: SIGN-OFF.** The shot was spent exactly once with
+intact one-shot discipline; every checkpoint/table/stats number re-derives from
+the predictions parquet to 0.00e+00; all six criterion-3 cells reconcile both
+from the persisted Δ vectors and from a fully independent raw-store rebuild
+(waterfall 197→1,488→104/35 dual, 114/36 311-only exact); the §6 stratum is
+set-identical at 120,631; the 7 scoring-set hashes and B3 343-tree assert fired;
+guards show 6 sites / max 2025 / zero ≥2026; the label and §11 caveat cover every
+surface incl. the parquet column; the frozen bundle and the entire G3
+pre-registration are byte-identical; and the predictions parquet is packet-grade.
+No defects, no fabrication. RP2 clears. The pilot result is disclosed as-is
+(RETROSPECTIVE AND NON-BLIND, §11 caveat on every number) and carries no weight
+at G3 — its adjudication is Ayur's alone in the result packet.

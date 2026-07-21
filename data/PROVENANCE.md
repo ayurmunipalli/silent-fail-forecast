@@ -703,3 +703,71 @@ operational only (segfault episode above; two external loop kills resumed
 cleanly, 257/257 units, zero losses). R-AUDIT RP1: 1 doc-only reject
 cycle (two prose margins), corrected with bracketed audit notes,
 SIGN-OFF.
+
+---
+
+## Stage RP2 — R-PILOT single-shot evaluation on season 2025-26 (Amendment 5(ii)) — RETROSPECTIVE AND NON-BLIND
+
+**Compiled by LEAD from signed-off sources only**
+(`outputs/checkpoints/rp2_eval.md` [R-AUDIT post-audit signed-off, zero
+defects], `rp2_work/single_shot_2025/rp2_stats.json`, r-audit.md RP2
+pre/post sections; ledger B111–B117).
+
+**Single-shot protocol (heightened, LEAD-imposed):** script
+`src/rp2_eval.py` (sha256 `652f199e87c0515665ad6ff23a7fb96d39a51b112e7fdc3
+df65340686a521ae5`) was REHEARSED end-to-end on season 2024 and
+PRE-AUDITED by R-AUDIT (sign-off, no defects; joint-subprocess scoring
+reproduced RP1 persisted scores to 1.19e-07) BEFORE the one authorized
+contact. **Season 2025-26 was contacted EXACTLY ONCE:
+2026-07-21T06:52:14, exit 0, ~8 s compute** (`SINGLE_SHOT_SPENT.sentinel`
+written pre-compute; rerun refuses recompute). Post-audit: every number
+re-derived from the predictions parquet to 0.00e+00; all six
+criterion-3-style cells reconciled from persisted Δ vectors AND an
+independent raw-store rebuild; §6 stratum set-identity (120,631); all 7
+scoring-set hash pins + B3 343-tree assert fired; frozen bundle + both
+G3 frames + all committed artifacts re-hashed UNCHANGED.
+
+**Eval universe:** the hash-pinned S2 frames' season-2025 rows (pre-Oct-1-
+2025 by construction, RP0), 181,863 rows, 8,897 whitelist label_c
+positives. Scoring set: rpilot_* (RP1 entry above), B3 as-is, B0–B2
+frozen definitions. Frozen build bundle NOT scored, NOT touched
+(Amendment 5(i)).
+
+**Results (observed-label; §11 caveat attaches; recorded as-is,
+disclosed whichever direction per Amendment 5(iii); NO prospective
+standing, NO weight at G3):** AP/p@250/zero-311 p@250 — B0
+.2155/.7360/.0280 · B1 .2784/.6320/.0520 · B2 .2734/.8000/.0480 · **B3
+.4339/.8480/.1240 · B4 .4533/.8560/.1600 · B5 .4528/.8640/.1520 ·
+joint_q .4408/.8280/.1160** (joint_F .4406/.8280/.1160). Amendment-5(ii)
+stratum comparison: joint_F .1160 vs B3 .1240 (B4 .1600, B5 .1520).
+Criterion-3-style (frozen grid-§7 statistic; P3 waterfall verbatim: 197
+lots → 1,488 in-season class-C events → 104 silent dual-screen events
+across **realized n = 35 buildings**): joint_F T=−0.0022 p=0.9996; B4
+T=−0.0004 p=0.9552; B5 T=−0.0004 p=0.9552; all reject@.05 = False;
+311-only sensitivity (n=36) consistent. Zero-drops reported per cell
+(1/0/0). Per-building Δ vectors persisted.
+
+**Artifacts (labeled RETROSPECTIVE AND NON-BLIND; kept under
+`rp2_work/single_shot_2025/`):** `predictions_2025.parquet` (181,863 ×
+14, building-season grain, all models + joint F/p/q + stratum flag +
+label column) sha256 `d3cdfdca8927c4d0e15100a31a5c532b870854e0fce323cca5
+eb739c017bd2fb`; `rp2_stats.json` `51f48aa0bbf8c3213bee4a8d50aca19bfc9ff
+726b3c5bc039fc45a834f2f5f3c`; `joint_scores.npz` `1eeb6464b4a3fd0fd3539e
+60e321078d91bca16f02e004d512ef66e7c16873eb`; checkpoint
+`outputs/checkpoints/rp2_eval.md`; rehearsal outputs under
+`rp2_work/rehearsal_2024/` (REHEARSAL-labeled, machinery validation
+only).
+
+**Operational disclosures:** two-process scoring design (torch/lightgbm
+cannot co-execute in one process here — generalized OpenMP clash, proven
+both directions); LATENT: committed `src/rp1_pilot.py` would segfault on
+its GBM stages on a from-scratch rerun (torch-first import order) — RP1's
+committed results are unaffected (audited determinism identity + persisted
+unit jsons); ruled disclosure-only, no mid-pilot patch.
+
+**Test-season sanctity:** guards 6 sites; max season touched 2025 = the
+single authorized contact; **zero ≥2026 firings**; season 2026-27 and the
+frozen G3 pre-registration untouched (byte-identical re-hash). **No
+Rule-9 conditions. No fabrication events.** R-AUDIT RP2: pre-audit
+sign-off (no defects) + post-audit sign-off (no defects, zero reject
+cycles).

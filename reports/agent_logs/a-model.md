@@ -238,3 +238,75 @@ universe (AP tie-key-free, unaffected). Guards: 44 distinct sites, max season
 touched 2025 (load sites only), zero ≥2026 firings (raw 390 = append-only
 snapshot). Storage 1.443 GB ≤ 2 GB. No Rule-9 conditions. No commits (LEAD's).
 Reported to LEAD; idle pending R-AUDIT RP1 / RP2 dispatch.
+
+---
+
+**M9 | 2026-07-21 | RP2 Phase A (heightened single-shot protocol): src/rp2_eval.py written + REHEARSED on season 2024; zero season-2025 contact. RETROSPECTIVE AND NON-BLIND.**
+
+Dispatch: LEAD, after RP1 sign-off (commit c8f10d9). Script implements
+Amendment 5(ii) + D9–D11 with a structural mode gate: rehearsal (default,
+V=2024, pyarrow row-filters season<=2024 so season-2025 rows never
+materialize, all timestamp reads truncated at 2025-05-31, guard hard-stops on
+any 2025 touch in rehearsal) vs --the-single-shot (V=2025, D9 asserts eval
+seasons=={2025}, spend-once sentinel written before compute; NEVER run in
+Phase A). Scoring set hash-pinned: rpilot_joint (subprocess-scored from its
+own bundle design/scaler), rpilot_b4 (risk-score deployment ranking; both
+stages hash+tree-count asserted), rpilot_b5, B3 as-is (343 assert, D10),
+B0–B2 frozen definitions (audited s3a machinery). Criterion-3-style statistic
+per frozen grid §7 with P3 waterfall + association rule verbatim, dual
+311+ygpa W=30 screen, 311-only sensitivity, exact sign test, realized n;
+computed for joint_F primary, B4/B5 mechanical secondaries. Labels = frame
+label_c (audited S2 whitelist build). Predictions persisted parquet with
+label column.
+
+Rehearsal (machinery validation ONLY — joint/B4/B5 in-sample on 2024, no
+standing): 181,718 rows / 7,730 positives; stratum 126,085; all metrics +
+screens + sign tests + persistence ran end-to-end; HSP waterfall 197 lots →
+1,587 season-2024 HSP events → 827 eligible → 84 silent dual (32 distinct
+buildings; 33 under 311-only); idempotent rerun clean; guards max season
+2024, zero ≥2026 firings. HSP 2025-26 coverage VERIFIED structurally from
+existing raw stores (metadata only): violations inspectiondate through
+2026-07-14, 311 union created through 2026-07-13, ygpa received through
+2026-07-15 — all season-2025 W=30 windows ⊂ coverage; hsp store 200 rows all
+Active, starts ≤2025-06-11. No new pulls; no season-2025 event content
+computed.
+
+SURPRISE (operational, disclosed): the RP1 OpenMP finding generalizes — torch
+and lightgbm cannot both EXECUTE in one process on this setup; whichever is
+imported second segfaults at its first native call (proven both directions by
+controlled A/B). rp2_eval.py therefore uses a two-process design (main =
+lightgbm/sklearn only; joint scoring in a torch-first subprocess, bbl
+alignment hard-asserted). LATENT ISSUE DISCLOSED: committed rp1_pilot.py
+(torch-first order) would segfault in its GBM stages on a from-scratch rerun
+— its GBM results were computed under the pre-fix order and are unaffected;
+flagged to LEAD, not patched (no authorization). No Rule-9 data conditions.
+No commits. Idle pending R-AUDIT pre-audit of rp2_eval.py / LEAD's one-shot
+authorization.
+
+---
+
+**M10 | 2026-07-21 | RP2 single shot EXECUTED (once) on season 2025-26 per LEAD authorization B114. RETROSPECTIVE AND NON-BLIND.**
+
+Pre-conditions: R-AUDIT pre-audit SIGN-OFF (no defects; subprocess scoring
+reproduced RP1 persisted scores to 1.19e-07); rehearsal complete (M9).
+Executed `src/rp2_eval.py --the-single-shot` exactly once, unmodified;
+sentinel spent 2026-07-21T06:52:14; exit 0; D9 asserted (eval seasons ==
+{2025}); a rerun refuses recompute.
+
+Results (as-is, §11 observed-label caveat attached; full numbers
+rp2_work/single_shot_2025/rp2_stats.json; checkpoint rp2_eval.md):
+universe 181,863 rows / 8,897 positives / stratum 120,631. AP / p@250 /
+zero-311 p@250: B0 .2155/.7360/.0280 · B1 .2784/.6320/.0520 ·
+B2 .2734/.8000/.0480 · B3 .4339/.8480/.1240 · B4 .4533/.8560/.1600 ·
+B5 .4528/.8640/.1520 · joint_q .4408/.8280/.1160 · joint_F
+.4406/.8280/.1160. Zero-311 p@250 vs B3 (.1240): joint_F .1160, B4 .1600,
+B5 .1520. Criterion-3-style (dual screen, realized n=35, all found in
+universe): joint_F T=−0.00222 p=.9996 reject=False (1 zero dropped, 8/34
+positive); B4 T=−0.00035 p=.9552 False (13/35); B5 T=−0.00037 p=.9552 False
+(13/35). 311-only sensitivity n=36: joint T=−0.00230 p=.9997; B4/B5
+T=−0.00034/−0.00033 p=.9338. Waterfall: 197 lots → 1,488 season-2025 HSP
+events → 0 pre-program / 0 coverage excluded → 104 silent dual (35
+buildings) / 114 311-only (36). Guards: 6 sites, max season 2025 (the
+authorized contact), zero ≥2026 firings. Storage ≈1.4 GB. Predictions
+persisted (predictions_2025.parquet, 181,863×14, labeled). No Rule-9
+conditions. No commits. Reported to LEAD; idle pending R-AUDIT post-audit.
