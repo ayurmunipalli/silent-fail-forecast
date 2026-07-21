@@ -344,3 +344,55 @@ scoring set**, such that summer 2027 requires zero interpretation:
 **Packet items B, C, D:** acknowledged as disclosed (hand-reconciled stats
 structure; one doc-only reject cycle; session-loss lineage). No action; on
 record via the packet and ledger.
+
+**Amendment 5 — R-PILOT authorized: retrospective 2025-26 pilot; dormancy-exempt as one scoped phase.**
+Dated 2026-07-21. Author of record: Ayur Munipalli.
+
+**(i) Retrospective pilot phase ("R-PILOT") is AUTHORIZED**, to run after
+the freeze entry, as a single scoped exemption from build-phase dormancy —
+everything else in the dormancy stands, and dormancy resumes when the
+R-PILOT result packet is delivered.
+
+- **Cutoff:** everything re-executed as-of **Oct 1, 2025**. Dev/validation
+  folds **strictly ≤ season 2024-25**; season 2025-26 is contacted exactly
+  once, at the (ii) evaluation.
+- **Re-selection, not reuse:** the frozen cfg-2009 artifact is **NOT
+  reused** — its selection saw 2025-26 validation folds. The joint model and
+  both twins are re-selected and re-trained at the pilot cutoff: the **SAME
+  locked grid** (`hyperparam_grid.md`, n=60 sample, seed 42) and the **same
+  pre-registered selection rules** re-executed mechanically over folds
+  v ∈ 2021-22 … 2024-25, with refit-E* and all frozen interpretation axes
+  (Amendment 4(i)) unchanged — for the §3 joint model, **B4** (two-stage
+  IPW), and **B5** (uncorrected twin). B0–B2 recomputed from their frozen
+  definitions.
+- **B3 scores as-is** (trained ≤2023; no retraining — WFF remains
+  read-only).
+- **Frames:** the hash-pinned S2 frames (`features_main` `477d3079…`,
+  `features_b3` `09f8e94d…`) are reused; by the §1 per-target-season rule
+  their season-2025 rows already encode nothing from on/after Oct 1, 2025.
+  No new pulls; no frame regeneration.
+- **The frozen bundle stays untouched:** `s3b_primary_seed42.pt` +
+  `s3b_frozen_config.json` are read-only throughout; no pilot artifact
+  overwrites, shadows, or renames any frozen or committed artifact.
+
+**(ii) Single-shot evaluation on season 2025-26 — ONE event,
+R-AUDIT-audited.** Scored once, persisted, reported as-is: observed-label
+metrics (AP, p@250); **zero-311-stratum p@250 vs B3** on the same stratum
+and season; and the **criterion-3-style sign test** on 2025-26
+silent-screened HSP events (W=30 screen, median rank-percentile
+improvement, one-sided exact sign test α = 0.05, **realized n reported**).
+Standing audit protocols bind: R-AUDIT temporal-leakage review at the pilot
+cutoff before any training; per-stage sign-offs; the §11 observed-label
+caveat attaches to every number.
+
+**(iii) PRE-COMMITTED, before any pilot code runs:**
+
+- The result is **disclosed in full whichever direction it lands** — any
+  criterion-style comparison failing ships as the finding.
+- Every pilot artifact, table, and log carries the label **RETROSPECTIVE
+  AND NON-BLIND**: the project's conception and this spec postdate season
+  2025-26; the pilot has no prospective standing.
+- The pilot **modifies NOTHING in the frozen G3 pre-registration**: §10 and
+  its margins, the frozen bundle, the Amendment-4 freeze entry, and the
+  2026-27 bright line (Rule 3) are untouched. R-PILOT results carry no
+  weight at G3 and are reported separately from it.
