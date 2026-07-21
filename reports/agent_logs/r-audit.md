@@ -1758,3 +1758,89 @@ pre-registration are byte-identical; and the predictions parquet is packet-grade
 No defects, no fabrication. RP2 clears. The pilot result is disclosed as-is
 (RETROSPECTIVE AND NON-BLIND, §11 caveat on every number) and carries no weight
 at G3 — its adjudication is Ayur's alone in the result packet.
+
+## 2026-07-21 — R-PILOT RESULT PACKET audit: outputs/checkpoints/rpilot_packet.md — **SIGN-OFF**
+
+Gate-packet protocol (freeze-gate precedent), dispatched by LEAD before the packet
+reaches Ayur. Cross-checked vs `rp1_stats.json`, `rp2_work/single_shot_2025/
+rp2_stats.json`, `rp1_pilot.md`, `rp2_eval.md`, my own r-audit.md RP0–RP2
+sections, PROVENANCE RP1/RP2, spec §10, and git/process_log. Five dispatched
+checks below.
+
+- **(1) Every number traces to a signed-off source; nothing re-derived.**
+  **§2 (RP1):** joint cfg 2009 / mean AP .3434 / E*=8 / determinism 0.00e+00 /
+  runner-up 1961 margin 1.7e-3; B4 s1 5411, s2 13411 / .3695 / runner 21485
+  margin 3.3e-5; B5 13411 / .3701 / runner 20928 margin 1.3e-4; B3 fold row
+  .3694/.8260/.1170; spread .3283–.3465 std .0072 — all reproduce `rp1_stats.json`
+  and my RP1 sign-off exactly. **§3 (RP2):** 181,863 / 8,897 / 120,631; the 8-row
+  metric table; stratum comparison .1160/.1240/.1600/.1520; waterfall 197 →
+  1,488 → 104 / 35 buildings; the six criterion-3 cells (T/p/reject, 311-only
+  n=36) — all reproduce `rp2_stats.json` and my RP2 post-audit exactly. **§5**
+  operational figures (0.00e+00, 1.19e-07, 300/300+20/20, RP1 44 sites / RP2 6
+  sites) trace to my r-audit.md sections. The only computed value, the 0.94
+  ratio, is arithmetic on two recorded values (.1160/.1240 = 0.9355 → 0.94) —
+  the explicitly permitted class, not a new measurement. Commits 54bf690 /
+  c8f10d9 / d273bd5 all exist and match their cited content. No number is new or
+  re-derived.
+- **(2) No recommendation language; §4 + the 0.94 anchor are faithful
+  restatements.** A token scan (recommend/should/suggest/promising/concern/fails/
+  passes/outperform/would-pass/would-fail/expect/likely/prospect/meets…) returns
+  ONLY the header disclaimer "no recommendation is made." §4 is symmetric and
+  fact-only: the joint's AP win (**beats B3** .4408 vs .4339) and its stratum
+  loss (**trails B3** .1160 vs .1240) are both bolded in the same bullet;
+  "**B4 and B5 beat both**" states the strongest result plainly (no burying);
+  "no model rejects (all T<0)" and the B4-vs-B5 pair are "as-is; no claim." No
+  selective emphasis. **The flagged 0.94 line** reads as EXACTLY arithmetic on
+  recorded values against a quoted spec constant: it quotes §10.1's margin
+  (≥1.35× B3 stratum p@250 — verified correct at spec line 172), states the ratio
+  0.94 = .1160/.1240, and quarantines it ("§10 is evaluated only at G3, on
+  2026-27, against the frozen bundle — not this pilot artifact"; labeled "not a
+  criterion here"). It states no pass/fail, infers no G3 outcome, and does not
+  editorialize the 0.94-vs-1.35 gap. It stays within bounds — I scrutinized it per
+  the dispatch's specific flag and it does NOT read as more than arithmetic +
+  spec-constant + scope disclaimer.
+- **(3) Nothing pre-resolved that is Ayur's.** §6 explicitly reserves
+  interpretation — "what the pilot means — including what, if anything, it
+  suggests about the two-stage-vs-joint question ahead of G3 — is Ayur's alone,"
+  and "§10.4 fallback … not altered by this pilot" (faithful to spec §10.4).
+  The Amendment-3 attribution pair (B4 vs B5) is presented "as-is; no claim" — no
+  attribution of the correction effect is drawn. No G3 implication is asserted
+  (the only G3 mentions are the "no weight at G3 / untouched pre-registration"
+  disclaimers). Interpretation, attribution, and G3 implication are all left to
+  Ayur.
+- **(4) Disclosure complete, both directions, all operational episodes.**
+  Amendment 5(iii) both-directions: the joint's AP win AND its stratum/
+  criterion-3 losses, B4/B5 leading, and the non-rejection are all present, none
+  omitted. All four operational episodes are in §5 and match the ledger: (i)
+  OpenMP torch/lightgbm clash (RP1 fix + RP2 two-process; determinism 0.00e+00 /
+  pre-audit 1.19e-07); (ii) the s3b-mirror bare-except silent-swallow, audited as
+  no build-phase impact (300/300 + 20/20 — my RP1 audit item 5); (iii) the latent
+  from-scratch `rp1_pilot.py` GBM segfault, disclosure-only per B111; (iv) harness
+  notification losses requiring LEAD ground-state verification twice (B102, B115 —
+  both present and accurately characterized in process_log). Nothing material
+  omitted.
+- **(5) Labels/caveats present and load-bearing.** RETROSPECTIVE AND NON-BLIND
+  frames the header ("attached to every number below") and recurs at §3, §5
+  (every artifact/table/config + all 181,863 parquet rows); the §11 observed-label
+  caveat "applies throughout" (header) and re-anchors §3. These are structural,
+  not decorative — they establish the entire packet's (lack of) standing.
+
+### Non-blocking observation (not a defect)
+The packet's §5 "single ~8 s execution" matches the disk mtimes
+(sentinel 06:52:14 → outputs 06:52:22) and my RP2 post-audit — the accurate,
+disk-grounded figure. It disagrees with `rp2_eval.md` deviation 5 / ledger B115,
+which say "~6 min" (a looser A-MODEL wall-clock figure). The packet propagated the
+accurate value, not the checkpoint's; no packet defect. Suggest LEAD reconcile the
+checkpoint's "~6 min" to the mtimes if convenient — does not affect the packet or
+the gate.
+
+**PACKET VERDICT: SIGN-OFF.** Every number traces to a signed-off source (the only
+arithmetic, the 0.94 ratio, is a permitted ratio of two recorded values); there is
+no recommendation language and the §4 directional summary + the 0.94 §10.1 anchor
+are faithful, symmetric, quarantined restatements of record/spec — not advocacy in
+either direction; nothing interpretive, attributive, or G3-implicating is
+pre-resolved (all reserved to Ayur); disclosure is complete in both directions with
+all four operational episodes; and the RETROSPECTIVE AND NON-BLIND + §11 labels are
+present and load-bearing throughout. Clear to reach Ayur; adjudication is Ayur's
+alone. This closes the R-PILOT R-AUDIT chain (RP0, RP1 + reject cycle, RP2 pre,
+RP2 post, packet — all SIGN-OFF).
